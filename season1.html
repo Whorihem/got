@@ -9,7 +9,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
     body {
       font-family: 'Tajawal', sans-serif;
-      background-color: #0a0a12; /* لون خلفية أزرق داكن */
+      background-color: #0a0a12;
     }
     .video-container {
       position: relative;
@@ -30,8 +30,8 @@
       border-right: 3px solid transparent;
     }
     .episode-item:hover, .current-episode {
-      background-color: #1a1a2e; /* لون خلفية أزرق داكن */
-      border-right-color: #4169e1; /* لون أزرق ملكي */
+      background-color: #1a1a2e;
+      border-right-color: #4169e1;
     }
     .season-dropdown {
       display: none;
@@ -67,14 +67,14 @@
       align-items: center;
     }
     .episode-thumbnail {
-      width: 140px; /* زيادة عرض الصورة */
-      height: 80px; /* زيادة ارتفاع الصورة */
+      width: 140px;
+      height: 80px;
       object-fit: cover;
       border-radius: 0.25rem;
-      margin-left: 1rem; /* زيادة المسافة بين الصورة والعنوان */
+      margin-left: 1rem;
     }
     .age-rating {
-      background-color: #eed740; /* تغيير اللون إلى أزرق */
+      background-color: #eed740;
       color: rgb(13, 0, 0);
       padding: 2px 8px;
       border-radius: 4px;
@@ -88,32 +88,33 @@
     .nav-button:hover {
       background-color: #4169e1;
     }
+    .nav-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body class="text-white">
 
-  <!-- مشغل الحلقات (مخفى في البداية) -->
-  <div id="episodePlayer" class="w-full max-w-4xl mx-auto mt-8 px-4 hidden">
+  <!-- مشغل الحلقات -->
+  <div id="episodePlayer" class="w-full max-w-4xl mx-auto mt-8 px-4">
     <div class="video-container rounded-lg overflow-hidden shadow-2xl">
       <iframe id="mainVideo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 
-  <!-- معلومات الحلقة (تظهر عند الاختيار) -->
-  <div id="episodeInfo" class="max-w-4xl mx-auto px-4 mt-6 hidden">
+  <!-- معلومات الحلقة -->
+  <div id="episodeInfo" class="max-w-4xl mx-auto px-4 mt-6">
     <div class="flex items-center space-x-4 space-x-reverse">
       <h1 id="episodeTitle" class="text-2xl font-bold"></h1>
-      <span class="age-rating">مشاهد مخففة</span> <!-- تغيير التصنيف العمري -->
+      <span class="age-rating">مشاهد مخففة</span>
     </div>
-    <p id="episodeDuration" class="text-gray-300 mt-2"></p>
-    <p id="episodeDescription" class="text-gray-400 mt-4"></p>
-    <p id="episodeRating" class="text-xl text-yellow-400 font-bold mt-2 "></p>
+    <p id="episodeRating" class="text-xl text-yellow-400 font-bold mt-2"></p>
   </div>
-
 
   <!-- أزرار التنقل -->
   <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
-    <button onclick="changeEpisode(-1)" class="nav-button px-4 py-2 rounded-lg">
+    <button onclick="changeEpisode(-1)" class="nav-button px-4 py-2 rounded-lg" disabled>
       ← الحلقة السابقة
     </button>
     <button onclick="changeEpisode(1)" class="nav-button px-4 py-2 rounded-lg">
@@ -143,18 +144,17 @@
         </div>
       </div>
     </div>
-    
-    <!-- الحلقة 1 -->
+   
+    <!-- الحلقات -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(1)">
       <div class="flex-shrink-0">
         <img src="https://i.pinimg.com/736x/d5/40/95/d5409539f9c3854731246c943e8eee69.jpg" class="episode-thumbnail">
       </div>
-      <div class="flex-grow mr-3"> <!-- زيادة المساحة اليمينية -->
+      <div class="flex-grow mr-3">
         <h3 class="font-bold">الحلقة 1: الشتاء قادم</h3>
       </div>
     </div>
     
-    <!-- الحلقة 2 -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(2)">
       <div class="flex-shrink-0">
         <img src="https://m.media-amazon.com/images/M/MV5BYjYxYjMxZGYtMGIzMi00NTY2LWI0MWMtNGJiMzhjYjkwNmI4XkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg" class="episode-thumbnail">
@@ -164,7 +164,7 @@
       </div>
     </div>
     
-    <!-- الحلقة 3 -->
+   <!-- الحلقة 3 -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(3)">
       <div class="flex-shrink-0">
         <img src="https://m.media-amazon.com/images/M/MV5BMmZmM2M4ODgtZmM4YS00ZDU0LWJmNTMtOTVkM2RhMGQ0NjIwXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg" class="episode-thumbnail">
@@ -233,7 +233,7 @@
         <h3 class="font-bold">الحلقة 9: بايلور</h3>
       </div>
     </div>
-    
+   
     <!-- 10الحلقة  -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(10)">
       <div class="flex-shrink-0">
@@ -243,29 +243,32 @@
         <h3 class="font-bold">الحلقة 10: نار و دم</h3>
       </div>
     </div>
+    
+  </div>
 
-    <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
-    <a href="home.html"> <button class="nav-button px-4 py-2 rounded-lg">
-     العودة الى الصفحة الرئيسية
-     </a>
-    </button>
-    </div>
+  <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
+    <a href="home.html">
+      <button class="nav-button px-4 py-2 rounded-lg">
+        العودة الى الصفحة الرئيسية
+      </button>
+    </a>
+  </div>
 
   <script>
-    // بيانات الحلقات
+    // بيانات الحلقات المبسطة
     const episodes = [
       {
         id: 1,
         title: "الحلقة 1: الشتاء قادم",
         rating: "IMDB: 8.9/10",
-        videoUrl: "https://drive.google.com/file/d/1ae3RTaUxVXcWhG4PAH73u7fENligFT9A/preview",
+        videoUrl: "https://drive.google.com/file/d/1ae3RTaUxVXcWhG4PAH73u7fENligFT9A/preview"
       },
       {
-        id:2,
+        id: 2,
         title: "الحلقة 2: طريق الملوك",
         rating: "IMDB: 8.6/10",
-        videoUrl: "https://drive.google.com/file/d/1u_5M9L30MUTAEA2GzE2qQcRFYVqtcc_G/preview",
-      },
+        videoUrl: "https://drive.google.com/file/d/1u_5M9L30MUTAEA2GzE2qQcRFYVqtcc_G/preview"
+      }
       {
         id:3,
         title: "الحلقة 3: لورد سنو",
@@ -315,136 +318,128 @@
         videoUrl: "https://drive.google.com/file/d/1gQgZCpEF7nT1GUUWdx_W2dtg5TDGu67v/preview",
       },
     ];
-    
-  
+
     let currentEpisodeId = null;
+    const currentSeason = 1; // الموسم الحالي
 
-// دالة تحميل الحلقة
-function loadEpisode(episodeId, event) {
-  const episode = episodes.find(ep => ep.id === episodeId);
-  if (!episode) return;
+    // دالة تحميل الحلقة
+    function loadEpisode(episodeId) {
+      const episode = episodes.find(ep => ep.id === episodeId);
+      if (!episode) return;
+      
+      currentEpisodeId = episodeId;
+      
+      document.getElementById('mainVideo').src = episode.videoUrl;
+      document.getElementById('episodeTitle').textContent = episode.title;
+      document.getElementById('episodeRating').textContent = episode.rating;
+      
+      updateNavigationButtons();
+    }
 
-  // تحديث الحلقة الحالية
-  currentEpisodeId = episodeId;
+    // دالة تحديث أزرار التنقل
+    function updateNavigationButtons() {
+      const prevBtn = document.querySelector('button[onclick="changeEpisode(-1)"]');
+      const nextBtn = document.querySelector('button[onclick="changeEpisode(1)"]');
 
-  // تحديث مشغل الفيديو
-  const player = document.getElementById('episodePlayer');
-  player.classList.remove('hidden');
-  document.getElementById('mainVideo').src = episode.videoUrl;
+      prevBtn.disabled = currentEpisodeId === 1;
+      nextBtn.disabled = currentEpisodeId === episodes.length;
+    }
 
-  // تحديث معلومات الحلقة
-  document.getElementById('episodeTitle').textContent = episode.title;
-  document.getElementById('episodeRating').textContent = episode.rating;
+    // دالة التنقل بين الحلقات
+    function changeEpisode(direction) {
+      if (currentEpisodeId === null) return loadEpisode(1);
+      
+      const newId = currentEpisodeId + direction;
+      
+      // إذا كانت الحلقة التالية غير موجودة في الموسم الحالي
+      if (newId > episodes.length) {
+        // الانتقال إلى الموسم التالي (الحلقة 1)
+        const nextSeason = currentSeason + 1;
+        if (nextSeason <= 8) { // افترضنا أن هناك 8 مواسم
+          window.location.href = `season${nextSeason}.html`;
+        }
+        return;
+      }
+      
+      // إذا كانت الحلقة السابقة غير موجودة
+      if (newId < 1) {
+        // الانتقال إلى الموسم السابق (آخر حلقة)
+        const prevSeason = currentSeason - 1;
+        if (prevSeason >= 1) {
+          window.location.href = `season${prevSeason}.html`;
+        }
+        return;
+      }
+      
+      loadEpisode(newId);
+    }
 
-  // تحديث الواجهة
-  document.querySelectorAll('.episode-item').forEach(item => {
-    item.classList.remove('current-episode');
-  });
-
-  // تمييز الحلقة الحالية
-  const clickedItem = event?.currentTarget || document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
-  if (clickedItem) clickedItem.classList.add('current-episode');
-
-  // تحديث حالة الأزرار
-  updateNavigationButtons();
-
-  // حفظ المشاهدة
-  saveWatchedEpisode(episodeId);
-}
-
-// دالة تحديث أزرار التنقل
-function updateNavigationButtons() {
-  const prevBtn = document.querySelector('button[onclick="changeEpisode(-1)"]');
-  const nextBtn = document.querySelector('button[onclick="changeEpisode(1)"]');
-
-  prevBtn.disabled = currentEpisodeId === 1;
-  nextBtn.disabled = currentEpisodeId === episodes.length;
-}
-
-// دالة التنقل بين الحلقات
-function changeEpisode(direction) {
-  if (currentEpisodeId === null) {
-    loadEpisode(1);
-    return;
-  }
-
-  const newId = currentEpisodeId + direction;
-  
-  // التأكد من أن رقم الحلقة ضمن النطاق الصحيح
-  if (newId >= 1 && newId <= episodes.length) {
-    loadEpisode(newId);
-  }
-}
-
-// دالة حفظ الحلقة المشاهدة
+    // عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      // تحميل الحلقة الأولى تلقائياً
+      loadEpisode(1);
+      
+      // إضافة event listeners للحلقات
+      document.querySelectorAll('.episode-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const episodeId = parseInt(this.getAttribute('onclick').match(/loadEpisode\((\d+)\)/)[1]);
+          loadEpisode(episodeId);
+        });
+      });
+    });
+// دالة حفظ الحلقة المشاهدة (المبسطة)
 function saveWatchedEpisode(episodeId) {
   const episode = episodes.find(ep => ep.id === episodeId);
   if (!episode) return;
 
-  const episodeElement = document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
-  const thumbnail = episodeElement?.querySelector('img')?.src || '';
-
   const watchedEpisode = {
     id: episode.id,
     title: episode.title,
-    season: 1,
-    thumbnail: thumbnail,
-    videoUrl: episode.videoUrl,
-    watchedAt: new Date().toISOString()
+    season: currentSeason,
+    videoUrl: episode.videoUrl
   };
 
-  let watchedEpisodes = JSON.parse(localStorage.getItem('watchedEpisodes') || '[]');
-  watchedEpisodes = watchedEpisodes.filter(ep => !(ep.id === episodeId && ep.season === 1));
-  watchedEpisodes.unshift(watchedEpisode);
-  
-  if (watchedEpisodes.length > 10) {
-    watchedEpisodes = watchedEpisodes.slice(0, 10);
-  }
-  
-  localStorage.setItem('watchedEpisodes', JSON.stringify(watchedEpisodes));
-  localStorage.setItem('lastWatchedEpisode', JSON.stringify({
-    season: 1,
-    episode: episodeId
-  }));
+  localStorage.setItem('lastWatchedEpisode', JSON.stringify(watchedEpisode));
 }
 
-// عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-  // تحميل آخر حلقة شوهدت
-  const lastWatched = JSON.parse(localStorage.getItem('lastWatchedEpisode') || '{}');
-  const scrollToEpisode = localStorage.getItem('scrollToEpisode');
+// دالة تحميل الحلقة (مع الحفظ)
+function loadEpisode(episodeId) {
+  const episode = episodes.find(ep => ep.id === episodeId);
+  if (!episode) return;
   
-  if (scrollToEpisode) {
-    loadEpisode(parseInt(scrollToEpisode));
-    localStorage.removeItem('scrollToEpisode');
-  } else if (lastWatched.season === 1 && lastWatched.episode) {
-    loadEpisode(lastWatched.episode);
+  currentEpisodeId = episodeId;
+  
+  document.getElementById('mainVideo').src = episode.videoUrl;
+  document.getElementById('episodeTitle').textContent = episode.title;
+  document.getElementById('episodeRating').textContent = episode.rating;
+  
+  updateNavigationButtons();
+  saveWatchedEpisode(episodeId); // <-- هذه هي السطر المهم للإضافة
+}
+
+// عند تحميل الصفحة (مع استعادة المشاهدة)
+document.addEventListener('DOMContentLoaded', function() {
+  // محاولة تحميل آخر حلقة شوهدت
+  const lastWatched = JSON.parse(localStorage.getItem('lastWatchedEpisode') || {});
+  
+  if (lastWatched.season === currentSeason && lastWatched.id) {
+    loadEpisode(lastWatched.id);
   } else {
-    // عرض الحلقة الأولى إذا لم يكن هناك مشاهدات سابقة
-    loadEpisode(1);
+    loadEpisode(1); // افتراضي: الحلقة الأولى
   }
-
-  // إضافة event listeners للحلقات
-  document.querySelectorAll('.episode-item').forEach(item => {
-    const onclickAttr = item.getAttribute('onclick');
-    const episodeIdMatch = onclickAttr?.match(/loadEpisode\((\d+)\)/);
-    if (episodeIdMatch) {
-      const episodeId = parseInt(episodeIdMatch[1]);
-      item.addEventListener('click', (e) => loadEpisode(episodeId, e));
-    }
-  });
+  
+  // ... بقية الكود ...
 });
 
-// قائمة المواسم المنسدلة
-document.getElementById('seasonBtn').addEventListener('click', function(e) {
-  e.stopPropagation();
-  document.getElementById('seasonDropdown').classList.toggle('show');
-});
+    // قائمة المواسم المنسدلة
+    document.getElementById('seasonBtn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      document.getElementById('seasonDropdown').classList.toggle('show');
+    });
 
-// إغلاق القائمة عند النقر خارجها
-window.addEventListener('click', function() {
-  document.getElementById('seasonDropdown').classList.remove('show');
-});
-    </script>
-  </body>
-</html>
+    window.addEventListener('click', function() {
+      document.getElementById('seasonDropdown').classList.remove('show');
+    });
+  </script>
+</body>
+  </html>
