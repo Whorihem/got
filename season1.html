@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لعبة العروش | الموسم 1</title>
+  <title>لعبة العروش | الموسم 2</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
     body {
       font-family: 'Tajawal', sans-serif;
-      background-color: #0a0a12;
+      background-color: #0a0a12; /* لون خلفية أزرق داكن */
     }
     .video-container {
       position: relative;
@@ -30,8 +30,8 @@
       border-right: 3px solid transparent;
     }
     .episode-item:hover, .current-episode {
-      background-color: #1a1a2e;
-      border-right-color: #4169e1;
+      background-color: #1a1a2e; /* لون خلفية أزرق داكن */
+      border-right-color: #4169e1; /* لون أزرق ملكي */
     }
     .season-dropdown {
       display: none;
@@ -67,14 +67,14 @@
       align-items: center;
     }
     .episode-thumbnail {
-      width: 140px;
-      height: 80px;
+      width: 140px; /* زيادة عرض الصورة */
+      height: 80px; /* زيادة ارتفاع الصورة */
       object-fit: cover;
       border-radius: 0.25rem;
-      margin-left: 1rem;
+      margin-left: 1rem; /* زيادة المسافة بين الصورة والعنوان */
     }
     .age-rating {
-      background-color: #eed740;
+      background-color: #eed740; /* تغيير اللون إلى أزرق */
       color: rgb(13, 0, 0);
       padding: 2px 8px;
       border-radius: 4px;
@@ -88,29 +88,38 @@
     .nav-button:hover {
       background-color: #4169e1;
     }
-    .nav-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
   </style>
 </head>
 <body class="text-white">
 
-  <!-- مشغل الحلقات -->
-  <div id="episodePlayer" class="w-full max-w-4xl mx-auto mt-8 px-4">
+  <!-- مشغل الحلقات (مخفى في البداية) -->
+  <div id="episodePlayer" class="w-full max-w-4xl mx-auto mt-8 px-4 hidden">
     <div class="video-container rounded-lg overflow-hidden shadow-2xl">
       <iframe id="mainVideo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 
-  <!-- معلومات الحلقة -->
-  <div id="episodeInfo" class="max-w-4xl mx-auto px-4 mt-6">
+  <!-- معلومات الحلقة (تظهر عند الاختيار) -->
+  <div id="episodeInfo" class="max-w-4xl mx-auto px-4 mt-6 hidden">
     <div class="flex items-center space-x-4 space-x-reverse">
       <h1 id="episodeTitle" class="text-2xl font-bold"></h1>
-      <span class="age-rating">مشاهد مخففة</span>
+      <span class="age-rating">مشاهد مخففة</span> <!-- تغيير التصنيف العمري -->
     </div>
-    <p id="episodeRating" class="text-xl text-yellow-400 font-bold mt-2"></p>
+    <p id="episodeDuration" class="text-gray-300 mt-2"></p>
+    <p id="episodeDescription" class="text-gray-400 mt-4"></p>
+    <p id="episodeRating" class="text-xl text-yellow-400 font-bold mt-2 "></p>
   </div>
+
+  <!-- معلومات الموسم) -->
+  <div id="seasonInfo" class="max-w-4xl mx-auto px-4 mt-6">
+    <div class="flex items-center space-x-4 space-x-reverse">
+      <h1 class="text-2xl font-bold">الموسم 1</h1>
+      <span class="age-rating">مشاهد مخففة</span> 
+    </div>
+    <p class="text-gray-300 mt-2">10 حلقات | مغامرات، فانتازيا</p>
+    <p class="text-gray-400 mt-4"></p>
+  </div>
+
 
 
   <!-- قائمة الحلقات -->
@@ -118,7 +127,7 @@
     <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
       <div class="relative">
         <button id="seasonBtn" class="season-btn">
-          الموسم الأول
+           الموسم الثاني
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
@@ -135,17 +144,18 @@
         </div>
       </div>
     </div>
-   
-    <!-- الحلقات -->
+    
+      <!-- الحلقة 1 -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(1)">
       <div class="flex-shrink-0">
         <img src="https://i.pinimg.com/736x/d5/40/95/d5409539f9c3854731246c943e8eee69.jpg" class="episode-thumbnail">
       </div>
-      <div class="flex-grow mr-3">
+      <div class="flex-grow mr-3"> <!-- زيادة المساحة اليمينية -->
         <h3 class="font-bold">الحلقة 1: الشتاء قادم</h3>
       </div>
     </div>
-    
+   
+    <!-- الحلقة 2 -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(2)">
       <div class="flex-shrink-0">
         <img src="https://m.media-amazon.com/images/M/MV5BYjYxYjMxZGYtMGIzMi00NTY2LWI0MWMtNGJiMzhjYjkwNmI4XkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg" class="episode-thumbnail">
@@ -154,8 +164,8 @@
         <h3 class="font-bold">الحلقة 2: طريق الملوك</h3>
       </div>
     </div>
-    
-<!-- الحلقة 3 -->
+   
+    <!-- الحلقة 3 -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(3)">
       <div class="flex-shrink-0">
         <img src="https://m.media-amazon.com/images/M/MV5BMmZmM2M4ODgtZmM4YS00ZDU0LWJmNTMtOTVkM2RhMGQ0NjIwXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg" class="episode-thumbnail">
@@ -234,16 +244,13 @@
         <h3 class="font-bold">الحلقة 10: نار و دم</h3>
       </div>
     </div>
-    
-  </div>
 
-  <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
-    <a href="home.html">
-      <button class="nav-button px-4 py-2 rounded-lg">
-        العودة الى الصفحة الرئيسية
-      </button>
-    </a>
-  </div>
+    <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
+    <a href="home.html"> <button class="nav-button px-4 py-2 rounded-lg">
+     العودة الى الصفحة الرئيسية
+     </a>
+    </button>
+    </div>
 
   <script>
     // بيانات الحلقات
@@ -252,13 +259,13 @@
         id: 1,
         title: "الحلقة 1: الشتاء قادم",
         rating: "IMDB: 8.9/10",
-        videoUrl: "https://drive.google.com/file/d/1ae3RTaUxVXcWhG4PAH73u7fENligFT9A/preview"
+        videoUrl: "https://drive.google.com/file/d/1ae3RTaUxVXcWhG4PAH73u7fENligFT9A/preview",
       },
       {
-        id: 2,
+        id:2,
         title: "الحلقة 2: طريق الملوك",
         rating: "IMDB: 8.6/10",
-        videoUrl: "https://drive.google.com/file/d/1u_5M9L30MUTAEA2GzE2qQcRFYVqtcc_G/preview"
+        videoUrl: "https://drive.google.com/file/d/1u_5M9L30MUTAEA2GzE2qQcRFYVqtcc_G/preview",
       },
       {
         id:3,
@@ -309,9 +316,9 @@
         videoUrl: "https://drive.google.com/file/d/1gQgZCpEF7nT1GUUWdx_W2dtg5TDGu67v/preview",
       },
     ];
-
-            
-let currentEpisodeId = null;
+   
+    
+    let currentEpisodeId = null;
 
 // دالة تحميل الحلقة
 function loadEpisode(episodeId, event) {
@@ -320,12 +327,10 @@ function loadEpisode(episodeId, event) {
   
   const episode = episodes.find(ep => ep.id === episodeId);
   if (!episode) return;
-
-  // إخفاء إعلان الموسم
-  document.getElementById('seasonTrailer').classList.add('hidden');
   
   // إظهار مشغل الحلقات
-  const player = document.getElementById('episodePlayer
+  const player = document.getElementById('episodePlayer');
+  player.classList.remove('hidden');
   document.getElementById('mainVideo').src = episode.videoUrl;
 
   // تحديث المعلومات
@@ -333,6 +338,7 @@ function loadEpisode(episodeId, event) {
   document.getElementById('episodeRating').textContent = episode.rating;
   
   // تبديل العروض
+  document.getElementById('seasonInfo').classList.add('hidden');
   document.getElementById('episodeInfo').classList.remove('hidden');
 
   // تحديث الواجهة
@@ -407,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadEpisode(lastWatched.episode);
   } else {
     // عرض إعلان الموسم فقط إذا لم يكن هناك حلقة مخزنة
-    document.getElementById('seasonTrailer').classList.remove('hidden');
     document.getElementById('episodePlayer').classList.add('hidden');
     document.getElementById('seasonInfo').classList.remove('hidden');
     document.getElementById('episodeInfo').classList.add('hidden');
@@ -436,4 +441,4 @@ window.addEventListener('click', function() {
 });
   </script>
 </body>
-      </html>
+  </html>
