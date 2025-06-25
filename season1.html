@@ -112,15 +112,6 @@
     <p id="episodeRating" class="text-xl text-yellow-400 font-bold mt-2"></p>
   </div>
 
-  <!-- أزرار التنقل -->
-  <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
-    <button onclick="changeEpisode(-1)" class="nav-button px-4 py-2 rounded-lg" disabled>
-      ← الحلقة السابقة
-    </button>
-    <button onclick="changeEpisode(1)" class="nav-button px-4 py-2 rounded-lg">
-      الحلقة التالــــية →
-    </button>
-  </div>
 
   <!-- قائمة الحلقات -->
   <div class="max-w-4xl mx-auto px-4 mt-8 mb-12">
@@ -268,7 +259,7 @@
         title: "الحلقة 2: طريق الملوك",
         rating: "IMDB: 8.6/10",
         videoUrl: "https://drive.google.com/file/d/1u_5M9L30MUTAEA2GzE2qQcRFYVqtcc_G/preview"
-      }
+      },
       {
         id:3,
         title: "الحلقة 3: لورد سنو",
@@ -319,96 +310,130 @@
       },
     ];
 
-    const currentSeason = 1;
-    let currentEpisodeId = null;
+            
+let currentEpisodeId = null;
 
-    // دالة حفظ الحلقة المشاهدة
-    function saveWatchedEpisode(episodeId) {
-      const episode = episodes.find(ep => ep.id === episodeId);
-      if (!episode) return;
+// دالة تحميل الحلقة
+function loadEpisode(episodeId, event) {
+  // منع السلوك الافتراضي إن كان هناك event
+  if (event) event.preventDefault();
+  
+  const episode = episodes.find(ep => ep.id === episodeId);
+  if (!episode) return;
 
-      const data = {
-        season: currentSeason,
-        episode: episodeId,
-        title: episode.title,
-        videoUrl: episode.videoUrl
-      };
+  // إخفاء إعلان الموسم
+  document.getElementById('seasonTrailer').classList.add('hidden');
+  
+  // إظهار مشغل الحلقات
+  const player = document.getElementById('episodePlayer
+  document.getElementById('mainVideo').src = episode.videoUrl;
 
-      localStorage.setItem('lastWatched', JSON.stringify(data));
+  // تحديث المعلومات
+  document.getElementById('episodeTitle').textContent = episode.title;
+  document.getElementById('episodeRating').textContent = episode.rating;
+  
+  // تبديل العروض
+  document.getElementById('episodeInfo').classList.remove('hidden');
+
+  // تحديث الواجهة
+  document.querySelectorAll('.episode-item').forEach(item => {
+    item.classList.remove('current-episode');
+  });
+  
+  // تمييز الحلقة الحالية
+  const clickedItem = event?.currentTarget || document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
+  if (clickedItem) clickedItem.classList.add('current-episode');
+
+  // حفظ المشاهدة
+  saveWatchedEpisode(episodeId);
+}
+
+// دالة حفظ الحلقة المشاهدة
+function saveWatchedEpisode(episodeId) {
+  const episode = episodes.find(ep => ep.id === episodeId);
+  if (!episode) return;
+
+  const episodeElement = document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
+  const thumbnail = episodeElement?.querySelector('img')?.src || '';
+
+  const watchedEpisode = {
+    id: episode.id,
+    title: episode.title,
+    season: 1,
+    thumbnail: thumbnail,
+    videoUrl: episode.videoUrl,
+    watchedAt: new Date().toISOString()
+  };
+
+  let watchedEpisodes = JSON.parse(localStorage.getItem('watchedEpisodes') || '[]');
+  
+  watchedEpisodes = watchedEpisodes.filter(ep => 
+    !(ep.id === episodeId && ep.season === 1)
+  );
+  
+  watchedEpisodes.unshift(watchedEpisode);
+  
+  if (watchedEpisodes.length > 10) {
+    watchedEpisodes = watchedEpisodes.slice(0, 10);
+  }
+  
+  localStorage.setItem('watchedEpisodes', JSON.stringify(watchedEpisodes));
+  localStorage.setItem('lastWatchedEpisode', JSON.stringify({
+    season: 1,
+    episode: episodeId
+  }));
+}
+
+// التنقل بين الحلقات
+function changeEpisode(direction) {
+  if (currentEpisodeId === null) return loadEpisode(1);
+  
+  const newId = currentEpisodeId + direction;
+  if (newId > 0 && newId <= episodes.length) {
+    loadEpisode(newId);
+  }
+}
+
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+  // تحميل آخر حلقة شوهدت
+  const lastWatched = JSON.parse(localStorage.getItem('lastWatchedEpisode') || '{}');
+  const scrollToEpisode = localStorage.getItem('scrollToEpisode');
+  
+  if (scrollToEpisode) {
+    loadEpisode(parseInt(scrollToEpisode));
+    localStorage.removeItem('scrollToEpisode');
+  } else if (lastWatched.season === 1 && lastWatched.episode) {
+    loadEpisode(lastWatched.episode);
+  } else {
+    // عرض إعلان الموسم فقط إذا لم يكن هناك حلقة مخزنة
+    document.getElementById('seasonTrailer').classList.remove('hidden');
+    document.getElementById('episodePlayer').classList.add('hidden');
+    document.getElementById('seasonInfo').classList.remove('hidden');
+    document.getElementById('episodeInfo').classList.add('hidden');
+  }
+  
+  // إضافة event listeners للحلقات (حل بديل إذا كانت الأون كليك لا تعمل)
+  document.querySelectorAll('.episode-item').forEach(item => {
+    const onclickAttr = item.getAttribute('onclick');
+    const episodeIdMatch = onclickAttr?.match(/loadEpisode\((\d+)\)/);
+    if (episodeIdMatch) {
+      const episodeId = parseInt(episodeIdMatch[1]);
+      item.addEventListener('click', (e) => loadEpisode(episodeId, e));
     }
+  });
+});
 
-    // دالة تحميل الحلقة
-    function loadEpisode(episodeId) {
-      const episode = episodes.find(ep => ep.id === episodeId);
-      if (!episode) return;
-      
-      currentEpisodeId = episodeId;
-      
-      document.getElementById('mainVideo').src = episode.videoUrl;
-      document.getElementById('episodeTitle').textContent = episode.title;
-      document.getElementById('episodeRating').textContent = episode.rating;
-      
-      updateNavigationButtons();
-      saveWatchedEpisode(episodeId);
-    }
+// قائمة المواسم المنسدلة
+document.getElementById('seasonBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('seasonDropdown').classList.toggle('show');
+});
 
-    // دالة تحديث أزرار التنقل
-    function updateNavigationButtons() {
-      const prevBtn = document.querySelector('button[onclick="changeEpisode(-1)"]');
-      const nextBtn = document.querySelector('button[onclick="changeEpisode(1)"]');
-
-      prevBtn.disabled = currentEpisodeId === 1;
-      nextBtn.disabled = currentEpisodeId === episodes.length;
-    }
-
-    // دالة التنقل بين الحلقات
-    function changeEpisode(direction) {
-      if (currentEpisodeId === null) return loadEpisode(1);
-      
-      const newId = currentEpisodeId + direction;
-      
-      // الانتقال للموسم التالي إذا كانت الحلقة الأخيرة
-      if (newId > episodes.length) {
-        const nextSeason = currentSeason + 1;
-        if (nextSeason <= 8) {
-          window.location.href = `season${nextSeason}.html`;
-        }
-        return;
-      }
-      
-      // الانتقال للموسم السابق إذا كانت الحلقة الأولى
-      if (newId < 1) {
-        const prevSeason = currentSeason - 1;
-        if (prevSeason >= 1) {
-          window.location.href = `season${prevSeason}.html`;
-        }
-        return;
-      }
-      
-      loadEpisode(newId);
-    }
-
-    // عند تحميل الصفحة
-    document.addEventListener('DOMContentLoaded', function() {
-      // تحميل آخر حلقة شوهدت في هذا الموسم
-      const lastWatched = JSON.parse(localStorage.getItem('lastWatched') || '{}');
-      
-      if (lastWatched.season === currentSeason && lastWatched.episode) {
-        loadEpisode(lastWatched.episode);
-      } else {
-        loadEpisode(1);
-      }
-    });
-
-    // قائمة المواسم المنسدلة
-    document.getElementById('seasonBtn').addEventListener('click', function(e) {
-      e.stopPropagation();
-      document.getElementById('seasonDropdown').classList.toggle('show');
-    });
-
-    window.addEventListener('click', function() {
-      document.getElementById('seasonDropdown').classList.remove('show');
-    });
+// إغلاق القائمة عند النقر خارجها
+window.addEventListener('click', function() {
+  document.getElementById('seasonDropdown').classList.remove('show');
+});
   </script>
 </body>
       </html>
