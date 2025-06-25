@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة العروش | الموسم 5</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #0a0a12; /* لون خلفية أزرق داكن */
+    }
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background-color: #000;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.5rem;
+    }
+    .episode-item {
+      transition: all 0.3s;
+      border-right: 3px solid transparent;
+    }
+    .episode-item:hover, .current-episode {
+      background-color: #1a1a2e; /* لون خلفية أزرق داكن */
+      border-right-color: #4169e1; /* لون أزرق ملكي */
+    }
+    .season-dropdown {
+      display: none;
+      position: absolute;
+      background-color: #1a1a2e;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      right: 0;
+      border-radius: 0.5rem;
+      border: 1px solid #2a3a6a;
+    }
+    .season-dropdown a {
+      color: white;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      border-bottom: 1px solid #2a3a6a;
+    }
+    .season-dropdown a:hover {
+      background-color: #4169e1;
+    }
+    .show { display: block; }
+    .season-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.25rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .episode-thumbnail {
+      width: 140px; /* زيادة عرض الصورة */
+      height: 80px; /* زيادة ارتفاع الصورة */
+      object-fit: cover;
+      border-radius: 0.25rem;
+      margin-left: 1rem; /* زيادة المسافة بين الصورة والعنوان */
+    }
+    .age-rating {
+      background-color: #eed740; /* تغيير اللون إلى أزرق */
+      color: rgb(13, 0, 0);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    .nav-button {
+      background-color: #1a1a2e;
+      color: white;
+      border: 1px solid #edf05d;
+    }
+    .nav-button:hover {
+      background-color: #4169e1;
+    }
+  </style>
+</head>
+<body class="text-white">
+
+  <!-- مشغل الحلقات (مخفى في البداية) -->
+  <div id="episodePlayer" class="w-full max-w-4xl mx-auto mt-8 px-4 hidden">
+    <div class="video-container rounded-lg overflow-hidden shadow-2xl">
+      <iframe id="mainVideo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- معلومات الحلقة (تظهر عند الاختيار) -->
+  <div id="episodeInfo" class="max-w-4xl mx-auto px-4 mt-6 hidden">
+    <div class="flex items-center space-x-4 space-x-reverse">
+      <h1 id="episodeTitle" class="text-2xl font-bold"></h1>
+      <span class="age-rating">مشاهد مخففة</span> <!-- تغيير التصنيف العمري -->
+    </div>
+    <p id="episodeDuration" class="text-gray-300 mt-2"></p>
+    <p id="episodeDescription" class="text-gray-400 mt-4"></p>
+    <p id="episodeRating" class="text-xl text-yellow-400 font-bold mt-2 "></p>
+  </div>
+
+  <!-- معلومات الموسم) -->
+  <div id="seasonInfo" class="max-w-4xl mx-auto px-4 mt-6">
+    <div class="flex items-center space-x-4 space-x-reverse">
+      <h1 class="text-2xl font-bold">الموسم 5</h1>
+      <span class="age-rating">مشاهد مخففة</span> 
+    </div>
+    <p class="text-gray-300 mt-2">10 حلقات | مغامرات، فانتازيا</p>
+    <p class="text-gray-400 mt-4"></p>
+  </div>
+
+  <!-- أزرار التنقل -->
+  <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
+    <button onclick="changeEpisode(-1)" class="nav-button px-4 py-2 rounded-lg">
+      ← الحلقة السابقة
+    </button>
+    <button onclick="changeEpisode(1)" class="nav-button px-4 py-2 rounded-lg">
+      الحلقة التالــــــية →
+    </button>
+  </div>
+
+  <!-- قائمة الحلقات -->
+  <div class="max-w-4xl mx-auto px-4 mt-8 mb-12">
+    <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+      <div class="relative">
+        <button id="seasonBtn" class="season-btn">
+          الموسم الخامس
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="seasonDropdown" class="season-dropdown">
+          <a href="season1.html">الموسم الأول</a>
+          <a href="season2.html">الموسم الثاني</a>
+          <a href="season3.html">الموسم الثالث</a>
+          <a href="season4.html">الموسم الرابع</a>
+          <a href="season5.html">الموسم الخامس</a>
+          <a href="season6.html">الموسم السادس</a>
+          <a href="season7.html">الموسم السابع</a>
+          <a href="season8.html">الموسم الثامن و الاخير</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- الحلقة 1 -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(1)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/093433bc-8ef1-31c5-8e95-205b7d4ac78e.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3"> <!-- زيادة المساحة اليمينية -->
+        <h3 class="font-bold">الحلقة 1: الحروب القادمة</h3>
+      </div>
+    </div>
+    
+    <!-- الحلقة 2 -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(2)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/6fa8f766-3a48-3278-aeeb-a99e7f0d78bb.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 2: بيت الكحلوش و الأبيض</h3>
+      </div>
+    </div>
+    
+    <!-- الحلقة 3 -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(3)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/c9f4c916-5e13-3e26-8ddf-0831fd0d472d.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 3: الدوري الاعلى</h3>
+      </div>
+  </div>
+
+  <!-- الحلقة 4 -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(4)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/16ec649f-fd3e-3b3d-aab5-a46d12ef9fe8.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 4: أبناء الهاربي</h3>
+      </div>
+    </div>
+
+    <!--5 الحلقة  -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(5)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/18d7598a-d766-3267-8080-aa1a97089b8d.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 5: اقتل الصبي</h3>
+      </div>
+    </div>
+
+    <!--6 الحلقة  -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(6)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/44251585-c0ec-361d-a55e-a9e6bda5a33a.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 6: لا نقهر, لا ننحني, لا نكسر</h3>
+      </div>
+    </div>
+
+    <!-- 7الحلقة  -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(7)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/00f4fd32-4c46-3f9b-9f0a-63c4828575d6.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 7: الهدية</h3>
+      </div>
+    </div>
+
+    <!-- 8الحلقة  -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(8)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/691aad1e-4902-3a4c-8ea1-d8521d72b896.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 8: هارهادوم</h3>
+      </div>
+    </div>
+
+    <!--9 الحلقة  -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(9)">
+      <div class="flex-shrink-0">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLS1mXeftFZngtimNUIe8XG7GUCsgjFsiIrQ&s" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 9: رقصة التنانين </h3>
+      </div>
+    </div>
+    
+    <!-- 10الحلقة  -->
+    <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(10)">
+      <div class="flex-shrink-0">
+        <img src="https://images.cdn.prd.api.discomax.com/2023/02/09/2b67ccd0-1c94-3798-a6f6-f6239b44b183.jpeg?f=jpg&q=75&w=1280&w=1200" class="episode-thumbnail">
+      </div>
+      <div class="flex-grow mr-3">
+        <h3 class="font-bold">الحلقة 10: رحمة الأم</h3>
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-4 mt-6 max-w-4xl mx-auto px-4">
+    <a href="home.html"> <button class="nav-button px-4 py-2 rounded-lg">
+     العودة الى الصفحة الرئيسية
+     </a>
+    </button>
+    </div>
+
+  <script>
+    // بيانات الحلقات
+    const episodes = [
+      {
+        id: 1,
+        title: "الحلقة 1: الحروب القادمة",
+        rating: "IMDB: 8.3/10",
+        videoUrl: "https://drive.google.com/file/d/1Vty6KrqhYlSHCOB179F5wTFdnr7PItGR/preview",
+      },
+      {
+        id:2,
+        title: "الحلقة 2: بيت الكحلوش و الأبيض",
+        rating: "IMDB: 8.3/10",
+        videoUrl: "https://drive.google.com/file/d/1t3Duy_4NxyzQNZTWzVOMA1sAeuY8ijCg/preview",
+      },
+      {
+        id:3,
+        title: "الحلقة 3: الدوري الاعلى",
+        rating: "IMDB: 8.3/10",
+        videoUrl: "https://drive.google.com/file/d/1V0KkCVgXwzYOfh0yEmdRuf38EVvWSeJI/preview",
+      },
+      {
+        id:4,
+        title: "الحلقة 4: أبناء الهاربي",
+        rating: "IMDB: 8.5/10",
+        videoUrl: "https://drive.google.com/file/d/1A9wQZGVAyVA7MndzmNNSI_se5nnP3sqH/preview",
+      },
+      {
+        id:5,
+        title: "الحلقة 5: اقتل الصبي",
+        rating: "IMDB: 8.5/10",
+        videoUrl: "https://drive.google.com/file/d/1OtmxPF5de2QZ8HXdKu5ZCLAShTTXRhYf/preview",
+      },
+      {
+        id:6,
+        title: "الحلقة 6: لا نقهر, لا ننحني, لا نكسر",
+        rating: "IMDB: 7.9/10",
+        videoUrl: "https://drive.google.com/file/d/18BugSFta1YVYkDA7Qfl5oSE-3fDXLW4R/preview",
+      },
+      {
+        id:7,
+        title: "الحلقة 7: الهدية",
+        rating: "IMDB: 8.8/10",
+        videoUrl: "https://drive.google.com/file/d/1PrS30suXy2tC86GdrHe7sqewFW9rP_wP/preview",
+      },
+      {
+        id:8,
+        title: "الحلقة 8: هارهادوم ",
+        rating: "IMDB: 9.8/10",
+        videoUrl: "https://drive.google.com/file/d/1iqBFajzHV6LRffW0zph9VrAnsQyuE_sb/preview",
+      },
+      {
+        id:9,
+        title: "الحلقة 9: رقصة التنانين",
+        rating: "IMDB: 9.4/10",
+        videoUrl: "https://drive.google.com/file/d/1OzDRxdCLizbTh1OUIZnGBkxzD6Zd9nR4/preview",
+      },
+      {
+        id:10,
+        title: "الحلقة 10: رحمة الأم",
+        rating: "IMDB: 9.1/10",
+        videoUrl: "https://drive.google.com/file/d/1i1-tL9StyAv4HtOgL5l3bu49jLbbFQcC/preview",
+      },
+    ];
+    
+   let currentEpisodeId = null;
+
+// دالة تحميل الحلقة
+function loadEpisode(episodeId, event) {
+  // منع السلوك الافتراضي إن كان هناك event
+  if (event) event.preventDefault();
+  
+  const episode = episodes.find(ep => ep.id === episodeId);
+  if (!episode) return;
+  
+  // إظهار مشغل الحلقات
+  const player = document.getElementById('episodePlayer');
+  player.classList.remove('hidden');
+  document.getElementById('mainVideo').src = episode.videoUrl;
+
+  // تحديث المعلومات
+  document.getElementById('episodeTitle').textContent = episode.title;
+  document.getElementById('episodeRating').textContent = episode.rating;
+  
+  // تبديل العروض
+  document.getElementById('seasonInfo').classList.add('hidden');
+  document.getElementById('episodeInfo').classList.remove('hidden');
+
+  // تحديث الواجهة
+  document.querySelectorAll('.episode-item').forEach(item => {
+    item.classList.remove('current-episode');
+  });
+  
+  // تمييز الحلقة الحالية
+  const clickedItem = event?.currentTarget || document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
+  if (clickedItem) clickedItem.classList.add('current-episode');
+
+  // حفظ المشاهدة
+  saveWatchedEpisode(episodeId);
+}
+
+// دالة حفظ الحلقة المشاهدة
+function saveWatchedEpisode(episodeId) {
+  const episode = episodes.find(ep => ep.id === episodeId);
+  if (!episode) return;
+
+  const episodeElement = document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
+  const thumbnail = episodeElement?.querySelector('img')?.src || '';
+
+  const watchedEpisode = {
+    id: episode.id,
+    title: episode.title,
+    season: 5,
+    thumbnail: thumbnail,
+    videoUrl: episode.videoUrl,
+    watchedAt: new Date().toISOString()
+  };
+
+  let watchedEpisodes = JSON.parse(localStorage.getItem('watchedEpisodes') || '[]');
+  
+  watchedEpisodes = watchedEpisodes.filter(ep => 
+    !(ep.id === episodeId && ep.season === 1)
+  );
+  
+  watchedEpisodes.unshift(watchedEpisode);
+  
+  if (watchedEpisodes.length > 10) {
+    watchedEpisodes = watchedEpisodes.slice(0, 10);
+  }
+  
+  localStorage.setItem('watchedEpisodes', JSON.stringify(watchedEpisodes));
+  localStorage.setItem('lastWatchedEpisode', JSON.stringify({
+    season: 1,
+    episode: episodeId
+  }));
+}
+
+// التنقل بين الحلقات
+function changeEpisode(direction) {
+  if (currentEpisodeId === null) return loadEpisode(1);
+  
+  const newId = currentEpisodeId + direction;
+  if (newId > 0 && newId <= episodes.length) {
+    loadEpisode(newId);
+  }
+}
+
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+  // تحميل آخر حلقة شوهدت
+  const lastWatched = JSON.parse(localStorage.getItem('lastWatchedEpisode') || '{}');
+  const scrollToEpisode = localStorage.getItem('scrollToEpisode');
+  
+  if (scrollToEpisode) {
+    loadEpisode(parseInt(scrollToEpisode));
+    localStorage.removeItem('scrollToEpisode');
+  } else if (lastWatched.season === 1 && lastWatched.episode) {
+    loadEpisode(lastWatched.episode);
+  } else {
+    // عرض إعلان الموسم فقط إذا لم يكن هناك حلقة مخزنة
+    document.getElementById('episodePlayer').classList.add('hidden');
+    document.getElementById('seasonInfo').classList.remove('hidden');
+    document.getElementById('episodeInfo').classList.add('hidden');
+  }
+  
+  // إضافة event listeners للحلقات (حل بديل إذا كانت الأون كليك لا تعمل)
+  document.querySelectorAll('.episode-item').forEach(item => {
+    const onclickAttr = item.getAttribute('onclick');
+    const episodeIdMatch = onclickAttr?.match(/loadEpisode\((\d+)\)/);
+    if (episodeIdMatch) {
+      const episodeId = parseInt(episodeIdMatch[1]);
+      item.addEventListener('click', (e) => loadEpisode(episodeId, e));
+    }
+  });
+});
+
+// قائمة المواسم المنسدلة
+document.getElementById('seasonBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('seasonDropdown').classList.toggle('show');
+});
+
+// إغلاق القائمة عند النقر خارجها
+window.addEventListener('click', function() {
+  document.getElementById('seasonDropdown').classList.remove('show');
+});
+  </script>
+</body>
+</html>

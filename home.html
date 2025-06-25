@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة العروش</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.cdnfonts.com/css/game-of-thrones" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Tajawal';
+            src: url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .got-font {
+            font-family: 'Game of Thrones', sans-serif;
+            letter-spacing: 2px;
+        }
+        
+        .hero-container {
+            position: relative;
+            height: 90vh;
+            background-image: url('https://i.postimg.cc/MHT6X6RB/download.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .title-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 30%, transparent);
+            padding: 3rem 2rem 2rem;
+        }
+        
+        .character-img {
+            transition: transform 0.3s ease;
+            border: 2px solid rgba(194, 178, 128, 0.5);
+        }
+        
+        .character-img:hover {
+            transform: scale(1.05);
+            border-color: rgba(194, 178, 128, 0.9);
+        }
+        
+        .no-spoilers-badge {
+            background-color: rgba(0,0,0,0.7);
+            border: 1px solid #c2b280;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <!-- قسم الصورة الرئيسية مع العنوان في الأسفل -->
+    <div class="hero-container">
+        <div class="title-overlay">
+            <div class="container mx-auto">
+                <div class="flex flex-col md:flex-row items-end justify-between">
+                    <h1 class="got-font text-3xl md:text-6xl  mb-4 ">GAME OF THRONES</h1>
+                    <div class="flex items-center space-x-4 space-x-reverse mb-4">
+                        <a href="season1.html">    
+                        <button class =" bg-yellow-400 text-black px-6 py-2 rounded-full text-lg font-semibold hover:bg-yellow-300 transition">
+                            مشاهدة
+                        </button>
+                        </a>
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <span class="text-xl">⭐ 9.3/10</span>
+                            <span class="no-spoilers-badge text-gray-300">مشاهد مخففة</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- القصة -->
+    <section class="px-6 md:px-20 py-12">
+        <h2 class="got-font text-3xl font-bold mb-4 border-b border-gray-700 pb-2">القصة</h2>
+        <p class="text-lg leading-relaxed max-w-4xl mx-auto">
+            تسع عائلات نبيلة تتصارع على السيطرة على ممالك ويستروس، بينما يقبع تهديد قديم في الشمال ينتظر لحظة العودة. 
+            في خضم الحرب، تتشكل التحالفات وتنهار، الأبطال ينهضون ويسقطون، ومصير الممالك معلق في الميزان.
+        </p>
+    </section>
+
+    <!-- المواسم -->
+     <section class="px-6 md:px-20 py-12 bg-gray-800">
+        <h2 class="got-font text-3xl font-bold mb-6 border-b border-gray-700 pb-2"> المواسم</h2>
+        <div class="overflow-x-auto">
+            <div class="flex space-x-6 space-x-reverse pb-4">
+                <!--الموسم 1-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season1.html" >
+                    <img src="https://i.postimg.cc/wTKt0PKd/got-s1-desktop.webp" alt="season1" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 1</h3>
+                </div>
+                <!--الموسم 2-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season2.html">
+                    <img src="https://i.postimg.cc/RVcW8R9J/got-s2-desktop.webp" alt="season2" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 2</h3>
+                </div>
+                <!--الموسم 3-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season3.html">
+                    <img src="https://i.postimg.cc/QdhFrTx4/got-s3-desktop.jpg" alt="season3" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 3</h3>
+                </div>
+                <!--الموسم 4-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season4.html">
+                    <img src="https://i.postimg.cc/BnpXZnjq/got-s4-desktop.webp" alt="season4" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 4</h3>
+                </div>
+                <!--الموسم 5-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season5.html">
+                    <img src="https://i.postimg.cc/Jhd0JY3v/got-s5-desktop.jpg" alt="season5" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 5</h3>
+                </div>
+                <!--الموسم 6-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season6.html">
+                    <img src="https://i.postimg.cc/XJRv1Zzg/got-s6-desktop.jpg" alt="season6" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 6</h3>
+                </div>
+                <!--الموسم 7-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season7.html">
+                    <img src="https://i.postimg.cc/0yVyRX4j/got-s7-desktop.webp" alt="season7" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 7</h3>
+                </div>
+                <!--الموسم 8-->
+                <div class="flex-shrink-0 w-64">
+                    <a href="season8.html">
+                    <img src="https://i.postimg.cc/Xq6VcRrH/got-s8-desktop.webp" alt="season8" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-36 object-cover"/></a>
+                    <h3 class="text-center mt-2 font-semibold">الموسم 8</h3>
+                </div>
+            </div>
+        </div>
+     </section>
+    
+     <!-- الشخصيات -->
+<section class="px-6 md:px-20 py-12 bg-gray-900">
+  <h2 class="got-font text-3xl font-bold mb-6 border-b border-gray-700 pb-2">الشخصيات الرئيسية</h2>
+
+  <div class="flex gap-10 overflow-x-auto pb-4">
+    
+    <!-- جون سنو -->
+    <div class="min-w-[150px] text-center transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/20">
+      <img src="https://i.pinimg.com/736x/54/00/71/54007161d529da176bdc3ff2a2918840.jpg" alt="جون سنو"
+        class="rounded-full w-32 h-32 object-cover mx-auto mb-3 border-2 border-yellow-500 hover:border-yellow-300 transition-all duration-300" />
+      <h3 class="text-xl font-semibold text-white hover:text-yellow-500 transition-colors duration-300">جون سنو</h3>
+      <p class="text-gray-400 hover:text-gray-200 transition-colors duration-300">الابن غير الشرعي لنيد ستارك</p>
+    </div>
+
+    <!-- دينيريس -->
+    <div class="min-w-[150px] text-center transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/20">
+      <img src="https://i.pinimg.com/736x/a4/ca/fd/a4cafdb084b50a746f7e0bfd7d68b3bd.jpg" alt="دينيريس"
+        class="rounded-full w-32 h-32 object-cover mx-auto mb-3 border-2 border-yellow-500 hover:border-yellow-300 transition-all duration-300" />
+      <h3 class="text-xl font-semibold text-white hover:text-yellow-500 transition-colors duration-300">دينيريس تارغيريان</h3>
+      <p class="text-gray-400 hover:text-gray-200 transition-colors duration-300">أم التنانين</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- آخر الحلقات المشاهدة -->
+<section class="px-6 md:px-20 py-12 bg-gray-800" id="watchedEpisodesSection">
+    <div class="flex justify-between items-center mb-6 ">
+        <h2 class="got-font text-3xl font-bold border-b border-gray-700 pb-2">آخر المشاهدات</h2>
+        <button onclick="clearWatchedEpisodes()" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition">
+            مسح السجل
+        </button>
+    </div>
+    <div id="watchedEpisodesList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- سيتم ملؤها بالجافاسكريبت -->
+    </div>
+    <p id="noWatchedEpisodes" class="text-gray-400 text-center py-4 hidden">لا توجد حلقات مشاهدة بعد</p>
+</section>
+
+    <!-- معلومات إضافية -->
+    <section class="px-6 md:px-20 py-12 bg-black">
+        <h2 class="got-font text-3xl font-bold mb-6 border-b border-gray-700 pb-2">معلومات المسلسل</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-yellow-400 mb-2">الجوائز</h3>
+                <ul class="space-y-2">
+                    <li>🏆 59 جائزة إيمي</li>
+                    <li>🏆 7 جوائز غولدن غلوب</li>
+                    <li>🏆 3 جوائز نقابة الممثلين</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-yellow-400 mb-2">حقائق</h3>
+                <ul class="space-y-2">
+                    <li>📅 8 مواسم (2011-2019)</li>
+                    <li>🎬 73 حلقة</li>
+                    <li>🌍 207 دول عرضت المسلسل</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-gray-900 p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">عودة الممالك</h1>
+
+        <button onclick="logout()"
+        class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition">
+    تسجيل الخروج 
+    </button>
+  </section>
+    <script>
+
+        document.addEventListener('DOMContentLoaded',function(){
+            const isLOggedIn=localStorage.getItem("user_logged_in");
+            if (isLOggedIn !== "true"){
+                window.location.href ="index.html";
+                }
+            });
+       
+            function logout(){
+                localStorage.removeItem("user_logged_in");
+                localStorage.removeItem("google_access_token");
+                window.location.href = "index.html";
+                }
+                
+
+                function displayWatchedEpisodes() {
+  const watchedEpisodes = JSON.parse(localStorage.getItem('watchedEpisodes') || []);
+  const container = document.getElementById('watchedEpisodesList');
+  const noEpisodesMsg = document.getElementById('noWatchedEpisodes');
+  
+  container.innerHTML = '';
+  
+  if (watchedEpisodes.length === 0) {
+    noEpisodesMsg.classList.remove('hidden');
+    return;
+  }
+  
+  noEpisodesMsg.classList.add('hidden');
+  
+  watchedEpisodes.forEach(episode => {
+    const episodeElement = document.createElement('div');
+    episodeElement.className = 'bg-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:shadow-yellow-500/20 transition cursor-pointer';
+    episodeElement.innerHTML = `
+      <div onclick="localStorage.setItem('scrollToEpisode', ${episode.id}); window.location.href='season${episode.season}.html'">
+        <img src="${episode.thumbnail}" alt="${episode.title}" class="w-full h-32 object-cover">
+        <div class="p-3">
+          <h3 class="font-semibold truncate">${episode.title}</h3>
+          <p class="text-sm text-gray-400">الموسم ${episode.season}</p>
+        </div>
+      </div>
+    `;
+    container.appendChild(episodeElement);
+  });
+}
+
+// مسح سجل المشاهدات
+function clearWatchedEpisodes() {
+  if (confirm('هل أنت متأكد من أنك تريد مسح سجل المشاهدات؟')) {
+    localStorage.removeItem('watchedEpisodes');
+    displayWatchedEpisodes();
+  }
+}
+
+// عرض الحلقات عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', displayWatchedEpisodes);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>بوابة الممالك - تسجيل الدخول</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-image: url('https://i.postimg.cc/MZN1wmpb/05663b1e889301de09f7072c5ae80a09-1.png');
+      background-size: cover;
+      background-position: center;
+    }
+    .bg-blur {
+      backdrop-filter: blur(2px);
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #d97706;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-white">
+
+  <div class="bg-blur p-8 rounded-2xl shadow-2xl max-w-md w-full text-center">
+    <h1 class="text-4xl font-bold mb-4 tracking-widest">بوابة الممالك</h1>
+    <p class="mb-6 text-lg">مرحبًا بك في عوالم ويستروس، سجّل دخولك للعبور</p>
+
+    <button id="loginBtn" onclick="authenticate()"
+      class="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-6 rounded-xl transition duration-300">
+      تسجيل الدخول باستخدام Google
+    </button>
+
+    <p class="text-sm mt-6 opacity-75">© 2025 - كل الحقوق محفوظة لريهام</p>
+  </div>
+
+  <script>
+    const CLIENT_ID = "979672261230-eq200v1cpuk19nbgb2hfm5amoggv460b.apps.googleusercontent.com";
+    const SCOPES = "https://www.googleapis.com/auth/userinfo.profile";
+    const TOKEN_KEY = "google_access_token";
+    const LOGIN_STATUS_KEY = "user_logged_in";
+
+    // عند تحميل الصفحة، تحقق من حالة تسجيل الدخول
+    document.addEventListener('DOMContentLoaded', function() {
+      const isLoggedIn = localStorage.getItem(LOGIN_STATUS_KEY);
+      const savedToken = localStorage.getItem(TOKEN_KEY);
+      
+      if (isLoggedIn === "true" && savedToken) {
+        // إذا كان مسجلاً دخول، توجيه مباشرة للصفحة الرئيسية
+        redirectToHome();
+      }
+    });
+
+    function authenticate() {
+      const loginBtn = document.getElementById('loginBtn');
+      loginBtn.innerHTML = '<div class="loader"></div> جاري التحضير...';
+      loginBtn.disabled = true;
+
+      google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (tokenResponse) => {
+          if (tokenResponse && tokenResponse.access_token) {
+            // حفظ حالة تسجيل الدخول والرمز في localStorage
+            localStorage.setItem(LOGIN_STATUS_KEY, "true");
+            localStorage.setItem(TOKEN_KEY, tokenResponse.access_token);
+            redirectToHome();
+          } else {
+            loginBtn.innerHTML = 'تسجيل الدخول باستخدام Google';
+            loginBtn.disabled = false;
+            alert('حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى');
+          }
+        },
+        error_callback: (error) => {
+          console.error('خطأ في المصادقة:', error);
+          loginBtn.innerHTML = 'تسجيل الدخول باستخدام Google';
+          loginBtn.disabled = false;
+          alert('حدث خطأ أثناء المصادقة: ' + error.message);
+        }
+      }).requestAccessToken();
+    }
+
+    function redirectToHome() {
+      window.location.href = "home.html";
+    }
+
+    // دالة تسجيل الخروج (يمكن استدعاؤها من أي صفحة)
+    function logout() {
+      localStorage.removeItem(LOGIN_STATUS_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      // يمكنك أيضًا إضافة استدعاء لـ Google لإنهاء الجلسة
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
