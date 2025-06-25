@@ -164,7 +164,7 @@
       </div>
     </div>
     
-   <!-- الحلقة 3 -->
+<!-- الحلقة 3 -->
     <div class="episode-item flex items-center p-3 rounded cursor-pointer mb-2" onclick="loadEpisode(3)">
       <div class="flex-shrink-0">
         <img src="https://m.media-amazon.com/images/M/MV5BMmZmM2M4ODgtZmM4YS00ZDU0LWJmNTMtOTVkM2RhMGQ0NjIwXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg" class="episode-thumbnail">
@@ -255,7 +255,7 @@
   </div>
 
   <script>
-    // بيانات الحلقات المبسطة
+    // بيانات الحلقات
     const episodes = [
       {
         id: 1,
@@ -319,8 +319,23 @@
       },
     ];
 
+    const currentSeason = 1;
     let currentEpisodeId = null;
-    const currentSeason = 1; // الموسم الحالي
+
+    // دالة حفظ الحلقة المشاهدة
+    function saveWatchedEpisode(episodeId) {
+      const episode = episodes.find(ep => ep.id === episodeId);
+      if (!episode) return;
+
+      const data = {
+        season: currentSeason,
+        episode: episodeId,
+        title: episode.title,
+        videoUrl: episode.videoUrl
+      };
+
+      localStorage.setItem('lastWatched', JSON.stringify(data));
+    }
 
     // دالة تحميل الحلقة
     function loadEpisode(episodeId) {
@@ -334,6 +349,7 @@
       document.getElementById('episodeRating').textContent = episode.rating;
       
       updateNavigationButtons();
+      saveWatchedEpisode(episodeId);
     }
 
     // دالة تحديث أزرار التنقل
@@ -351,19 +367,17 @@
       
       const newId = currentEpisodeId + direction;
       
-      // إذا كانت الحلقة التالية غير موجودة في الموسم الحالي
+      // الانتقال للموسم التالي إذا كانت الحلقة الأخيرة
       if (newId > episodes.length) {
-        // الانتقال إلى الموسم التالي (الحلقة 1)
         const nextSeason = currentSeason + 1;
-        if (nextSeason <= 8) { // افترضنا أن هناك 8 مواسم
+        if (nextSeason <= 8) {
           window.location.href = `season${nextSeason}.html`;
         }
         return;
       }
       
-      // إذا كانت الحلقة السابقة غير موجودة
+      // الانتقال للموسم السابق إذا كانت الحلقة الأولى
       if (newId < 1) {
-        // الانتقال إلى الموسم السابق (آخر حلقة)
         const prevSeason = currentSeason - 1;
         if (prevSeason >= 1) {
           window.location.href = `season${prevSeason}.html`;
@@ -376,60 +390,15 @@
 
     // عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
-      // تحميل الحلقة الأولى تلقائياً
-      loadEpisode(1);
+      // تحميل آخر حلقة شوهدت في هذا الموسم
+      const lastWatched = JSON.parse(localStorage.getItem('lastWatched') || '{}');
       
-      // إضافة event listeners للحلقات
-      document.querySelectorAll('.episode-item').forEach(item => {
-        item.addEventListener('click', function() {
-          const episodeId = parseInt(this.getAttribute('onclick').match(/loadEpisode\((\d+)\)/)[1]);
-          loadEpisode(episodeId);
-        });
-      });
+      if (lastWatched.season === currentSeason && lastWatched.episode) {
+        loadEpisode(lastWatched.episode);
+      } else {
+        loadEpisode(1);
+      }
     });
-// دالة حفظ الحلقة المشاهدة (المبسطة)
-function saveWatchedEpisode(episodeId) {
-  const episode = episodes.find(ep => ep.id === episodeId);
-  if (!episode) return;
-
-  const watchedEpisode = {
-    id: episode.id,
-    title: episode.title,
-    season: currentSeason,
-    videoUrl: episode.videoUrl
-  };
-
-  localStorage.setItem('lastWatchedEpisode', JSON.stringify(watchedEpisode));
-}
-
-// دالة تحميل الحلقة (مع الحفظ)
-function loadEpisode(episodeId) {
-  const episode = episodes.find(ep => ep.id === episodeId);
-  if (!episode) return;
-  
-  currentEpisodeId = episodeId;
-  
-  document.getElementById('mainVideo').src = episode.videoUrl;
-  document.getElementById('episodeTitle').textContent = episode.title;
-  document.getElementById('episodeRating').textContent = episode.rating;
-  
-  updateNavigationButtons();
-  saveWatchedEpisode(episodeId); // <-- هذه هي السطر المهم للإضافة
-}
-
-// عند تحميل الصفحة (مع استعادة المشاهدة)
-document.addEventListener('DOMContentLoaded', function() {
-  // محاولة تحميل آخر حلقة شوهدت
-  const lastWatched = JSON.parse(localStorage.getItem('lastWatchedEpisode') || {});
-  
-  if (lastWatched.season === currentSeason && lastWatched.id) {
-    loadEpisode(lastWatched.id);
-  } else {
-    loadEpisode(1); // افتراضي: الحلقة الأولى
-  }
-  
-  // ... بقية الكود ...
-});
 
     // قائمة المواسم المنسدلة
     document.getElementById('seasonBtn').addEventListener('click', function(e) {
@@ -442,4 +411,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   </script>
 </body>
-  </html>
+      </html>
