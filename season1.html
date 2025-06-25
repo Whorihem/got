@@ -326,41 +326,63 @@
     ];
     
   
-
-let currentEpisodeId = null;
+    let currentEpisodeId = null;
 
 // دالة تحميل الحلقة
 function loadEpisode(episodeId, event) {
-  // منع السلوك الافتراضي إن كان هناك event
-  if (event) event.preventDefault();
-  
   const episode = episodes.find(ep => ep.id === episodeId);
   if (!episode) return;
-  
-  // إظهار مشغل الحلقات
+
+  // تحديث الحلقة الحالية
+  currentEpisodeId = episodeId;
+
+  // تحديث مشغل الفيديو
   const player = document.getElementById('episodePlayer');
   player.classList.remove('hidden');
   document.getElementById('mainVideo').src = episode.videoUrl;
 
-  // تحديث المعلومات
+  // تحديث معلومات الحلقة
   document.getElementById('episodeTitle').textContent = episode.title;
   document.getElementById('episodeRating').textContent = episode.rating;
-  
-  // تبديل العروض
-  document.getElementById('seasonInfo').classList.add('hidden');
-  document.getElementById('episodeInfo').classList.remove('hidden');
 
   // تحديث الواجهة
   document.querySelectorAll('.episode-item').forEach(item => {
     item.classList.remove('current-episode');
   });
-  
+
   // تمييز الحلقة الحالية
   const clickedItem = event?.currentTarget || document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
   if (clickedItem) clickedItem.classList.add('current-episode');
 
+  // تحديث حالة الأزرار
+  updateNavigationButtons();
+
   // حفظ المشاهدة
   saveWatchedEpisode(episodeId);
+}
+
+// دالة تحديث أزرار التنقل
+function updateNavigationButtons() {
+  const prevBtn = document.querySelector('button[onclick="changeEpisode(-1)"]');
+  const nextBtn = document.querySelector('button[onclick="changeEpisode(1)"]');
+
+  prevBtn.disabled = currentEpisodeId === 1;
+  nextBtn.disabled = currentEpisodeId === episodes.length;
+}
+
+// دالة التنقل بين الحلقات
+function changeEpisode(direction) {
+  if (currentEpisodeId === null) {
+    loadEpisode(1);
+    return;
+  }
+
+  const newId = currentEpisodeId + direction;
+  
+  // التأكد من أن رقم الحلقة ضمن النطاق الصحيح
+  if (newId >= 1 && newId <= episodes.length) {
+    loadEpisode(newId);
+  }
 }
 
 // دالة حفظ الحلقة المشاهدة
@@ -381,11 +403,7 @@ function saveWatchedEpisode(episodeId) {
   };
 
   let watchedEpisodes = JSON.parse(localStorage.getItem('watchedEpisodes') || '[]');
-  
-  watchedEpisodes = watchedEpisodes.filter(ep => 
-    !(ep.id === episodeId && ep.season === 1)
-  );
-  
+  watchedEpisodes = watchedEpisodes.filter(ep => !(ep.id === episodeId && ep.season === 1));
   watchedEpisodes.unshift(watchedEpisode);
   
   if (watchedEpisodes.length > 10) {
@@ -397,16 +415,6 @@ function saveWatchedEpisode(episodeId) {
     season: 1,
     episode: episodeId
   }));
-}
-
-// التنقل بين الحلقات
-function changeEpisode(direction) {
-  if (currentEpisodeId === null) return loadEpisode(1);
-  
-  const newId = currentEpisodeId + direction;
-  if (newId > 0 && newId <= episodes.length) {
-    loadEpisode(newId);
-  }
 }
 
 // عند تحميل الصفحة
@@ -421,13 +429,11 @@ document.addEventListener('DOMContentLoaded', function() {
   } else if (lastWatched.season === 1 && lastWatched.episode) {
     loadEpisode(lastWatched.episode);
   } else {
-    // عرض إعلان الموسم فقط إذا لم يكن هناك حلقة مخزنة
-    document.getElementById('episodePlayer').classList.add('hidden');
-    document.getElementById('seasonInfo').classList.remove('hidden');
-    document.getElementById('episodeInfo').classList.add('hidden');
+    // عرض الحلقة الأولى إذا لم يكن هناك مشاهدات سابقة
+    loadEpisode(1);
   }
-  
-  // إضافة event listeners للحلقات (حل بديل إذا كانت الأون كليك لا تعمل)
+
+  // إضافة event listeners للحلقات
   document.querySelectorAll('.episode-item').forEach(item => {
     const onclickAttr = item.getAttribute('onclick');
     const episodeIdMatch = onclickAttr?.match(/loadEpisode\((\d+)\)/);
@@ -448,6 +454,6 @@ document.getElementById('seasonBtn').addEventListener('click', function(e) {
 window.addEventListener('click', function() {
   document.getElementById('seasonDropdown').classList.remove('show');
 });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
