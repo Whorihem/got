@@ -103,7 +103,7 @@
   <div id="episodeInfo" class="max-w-4xl mx-auto px-4 mt-6 hidden">
     <div class="flex items-center space-x-4 space-x-reverse">
       <h1 id="episodeTitle" class="text-2xl font-bold"></h1>
-      <span class="age-rating">مشاهد مخففة</span> <!-- تغيير التصنيف العمري -->
+      <span class="age-rating">بدون لقطات</span>
     </div>
     <p id="episodeDuration" class="text-gray-300 mt-2"></p>
     <p id="episodeDescription" class="text-gray-400 mt-4"></p>
@@ -114,12 +114,11 @@
   <div id="seasonInfo" class="max-w-4xl mx-auto px-4 mt-6">
     <div class="flex items-center space-x-4 space-x-reverse">
       <h1 class="text-2xl font-bold">الموسم 5</h1>
-      <span class="age-rating">مشاهد مخففة</span> 
+      <span class="age-rating">بدون لقطات</span> 
     </div>
     <p class="text-gray-300 mt-2">10 حلقات | مغامرات، فانتازيا</p>
-    <p class="text-gray-400 mt-4"></p>
+    <p class="text-gray-400 mt-4">تتشتت الشخصيات في أنحاء الممالك، كلٌّ يسعى لبناء قوته أو النجاة، فيما تتشكل قوى جديدة تُهدّد الجميع.</p>
   </div>
-
 
   <!-- قائمة الحلقات -->
   <div class="max-w-4xl mx-auto px-4 mt-8 mb-12">
@@ -316,7 +315,8 @@
       },
     ];
     
-   let currentEpisodeId = null;
+    const seasonNumber = 5;
+  let currentEpisodeId = null;
 
 // دالة تحميل الحلقة
 function loadEpisode(episodeId, event) {
@@ -348,45 +348,16 @@ function loadEpisode(episodeId, event) {
   const clickedItem = event?.currentTarget || document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
   if (clickedItem) clickedItem.classList.add('current-episode');
 
+  // تمرير الصفحة إلى الأعلى عند الضغط على الحلقة
+  window.scrollTo({
+    top: player.offsetTop - 20, // مسافة بسيطة من الأعلى
+    behavior: 'smooth'           // حركة سلسة
+  });
+
   // حفظ المشاهدة
   saveWatchedEpisode(episodeId);
 }
 
-// دالة حفظ الحلقة المشاهدة
-function saveWatchedEpisode(episodeId) {
-  const episode = episodes.find(ep => ep.id === episodeId);
-  if (!episode) return;
-
-  const episodeElement = document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
-  const thumbnail = episodeElement?.querySelector('img')?.src || '';
-
-  const watchedEpisode = {
-    id: episode.id,
-    title: episode.title,
-    season: 5,
-    thumbnail: thumbnail,
-    videoUrl: episode.videoUrl,
-    watchedAt: new Date().toISOString()
-  };
-
-  let watchedEpisodes = JSON.parse(localStorage.getItem('watchedEpisodes') || '[]');
-  
-  watchedEpisodes = watchedEpisodes.filter(ep => 
-    !(ep.id === episodeId && ep.season === 1)
-  );
-  
-  watchedEpisodes.unshift(watchedEpisode);
-  
-  if (watchedEpisodes.length > 10) {
-    watchedEpisodes = watchedEpisodes.slice(0, 10);
-  }
-  
-  localStorage.setItem('watchedEpisodes', JSON.stringify(watchedEpisodes));
-  localStorage.setItem('lastWatchedEpisode', JSON.stringify({
-    season: 1,
-    episode: episodeId
-  }));
-}
 
 // التنقل بين الحلقات
 function changeEpisode(direction) {
@@ -398,25 +369,21 @@ function changeEpisode(direction) {
   }
 }
 
-// عند تحميل الصفحة
+
 document.addEventListener('DOMContentLoaded', function() {
-  // تحميل آخر حلقة شوهدت
-  const lastWatched = JSON.parse(localStorage.getItem('lastWatchedEpisode') || '{}');
-  const scrollToEpisode = localStorage.getItem('scrollToEpisode');
-  
-  if (scrollToEpisode) {
-    loadEpisode(parseInt(scrollToEpisode));
-    localStorage.removeItem('scrollToEpisode');
-  } else if (lastWatched.season === 1 && lastWatched.episode) {
-    loadEpisode(lastWatched.episode);
+  const storageKey = `watchedEpisodes_s${seasonNumber}`;
+  const watchedEpisodes = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+  if (watchedEpisodes.length > 0) {
+    // نحمل آخر حلقة مشاهدتها لهذا الموسم
+    const lastEpisode = watchedEpisodes[0];
+    loadEpisode(lastEpisode.id);
   } else {
-    // عرض إعلان الموسم فقط إذا لم يكن هناك حلقة مخزنة
     document.getElementById('episodePlayer').classList.add('hidden');
     document.getElementById('seasonInfo').classList.remove('hidden');
     document.getElementById('episodeInfo').classList.add('hidden');
   }
-  
-  // إضافة event listeners للحلقات (حل بديل إذا كانت الأون كليك لا تعمل)
+
   document.querySelectorAll('.episode-item').forEach(item => {
     const onclickAttr = item.getAttribute('onclick');
     const episodeIdMatch = onclickAttr?.match(/loadEpisode\((\d+)\)/);
@@ -426,6 +393,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+function saveWatchedEpisode(episodeId) {
+  const episode = episodes.find(ep => ep.id === episodeId);
+  if (!episode) return;
+
+  const episodeElement = document.querySelector(`.episode-item[onclick*="loadEpisode(${episodeId})"]`);
+  const thumbnail = episodeElement?.querySelector('img')?.src || '';
+
+  const watchedEpisode = {
+    id: episode.id,
+    title: episode.title,
+    season: seasonNumber,
+    thumbnail,
+    videoUrl: episode.videoUrl,
+    watchedAt: new Date().toISOString()
+  };
+
+  const storageKey = `watchedEpisodes_s${seasonNumber}`;
+  let watchedEpisodes = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+  /// مفتاح عام يضم الموسم + الحلقة
+let allWatched = JSON.parse(localStorage.getItem('watchedEpisodes') || '[]');
+allWatched = allWatched.filter(ep => !(ep.id === episode.id && ep.season === seasonNumber));
+allWatched.unshift(watchedEpisode);
+if (allWatched.length > 10) allWatched = allWatched.slice(0, 10);
+localStorage.setItem('watchedEpisodes', JSON.stringify(allWatched));
+
+  // إزالة أي نسخة قديمة من نفس الحلقة
+  watchedEpisodes = watchedEpisodes.filter(ep => ep.id !== episodeId);
+  // إضافة الحلقة الجديدة في البداية
+  watchedEpisodes.unshift(watchedEpisode);
+  // الاحتفاظ بآخر 10 حلقات فقط
+  if (watchedEpisodes.length > 10) {
+    watchedEpisodes = watchedEpisodes.slice(0, 10);
+  }
+  localStorage.setItem(storageKey, JSON.stringify(watchedEpisodes));
+  
+  // حفظ آخر حلقة تمت مشاهدتها
+  localStorage.setItem('lastWatchedEpisode', JSON.stringify({
+    season: seasonNumber,
+    episode: episodeId
+  }));
+}
 
 // قائمة المواسم المنسدلة
 document.getElementById('seasonBtn').addEventListener('click', function(e) {
