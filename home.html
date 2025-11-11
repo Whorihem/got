@@ -72,7 +72,7 @@
                         </a>
                         <div class="flex items-center space-x-2 space-x-reverse">
                             <span class="text-xl">⭐ 9.3/10</span>
-                            <span class="no-spoilers-badge text-gray-300">مشاهد مخففة</span>
+                            <span class="no-spoilers-badge text-gray-300">بدون لقطات</span>
                         </div>
                     </div>
                 </div>
@@ -179,9 +179,9 @@
             مسح السجل
         </button>
     </div>
-    <div id="watchedEpisodesList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <!-- سيتم ملؤها بالجافاسكريبت -->
-    </div>
+   <div id="watchedEpisodesList" class="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-track-gray-700 py-2">
+  <!-- سيتم ملؤها بالجافاسكريبت -->
+</div>
     <p id="noWatchedEpisodes" class="text-gray-400 text-center py-4 hidden">لا توجد حلقات مشاهدة بعد</p>
 </section>
 
@@ -240,26 +240,26 @@
   container.innerHTML = '';
   
   if (watchedEpisodes.length === 0) {
-    noEpisodesMsg.classList.remove('hidden');
+    noEpisodesMsg.classList.remove ('hidden');
     return;
   }
   
   noEpisodesMsg.classList.add('hidden');
   
-  watchedEpisodes.forEach(episode => {
-    const episodeElement = document.createElement('div');
-    episodeElement.className = 'bg-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:shadow-yellow-500/20 transition cursor-pointer';
-    episodeElement.innerHTML = `
-      <div onclick="localStorage.setItem('scrollToEpisode', ${episode.id}); window.location.href='season${episode.season}.html'">
-        <img src="${episode.thumbnail}" alt="${episode.title}" class="w-full h-32 object-cover">
-        <div class="p-3">
-          <h3 class="font-semibold truncate">${episode.title}</h3>
-          <p class="text-sm text-gray-400">الموسم ${episode.season}</p>
-        </div>
+ watchedEpisodes.forEach(episode => {
+  const episodeElement = document.createElement('div');
+  episodeElement.className = 'flex-shrink-0 w-48 bg-gray-700 rounded-lg overflow-hidden hover:shadow-lg hover:shadow-yellow-500/20 transition cursor-pointer';
+  episodeElement.innerHTML = `
+    <div onclick="localStorage.setItem('scrollToEpisode', ${episode.id}); window.location.href='season${episode.season}.html'">
+      <img src="${episode.thumbnail}" alt="${episode.title}" class="w-full h-32 object-cover">
+      <div class="p-3">
+        <h3 class="font-semibold truncate">${episode.title}</h3>
+        <p class="text-sm text-gray-400">الموسم ${episode.season}</p>
       </div>
-    `;
-    container.appendChild(episodeElement);
-  });
+    </div>
+  `;
+  container.appendChild(episodeElement);
+});
 }
 
 // مسح سجل المشاهدات
@@ -272,6 +272,70 @@ function clearWatchedEpisodes() {
 
 // عرض الحلقات عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', displayWatchedEpisodes);
+
+
+// تاريخ عيد ميلاد ريتاج
+const birthday = { day: 18, month: 11 };
+
+// التاريخ الحالي
+const today = new Date();
+const isBirthday = (today.getDate() === birthday.day && (today.getMonth() + 1) === birthday.month);
+
+// التحقق إذا ظهرت الرسالة اليوم مسبقًا
+const lastShown = localStorage.getItem('birthdayMessageShown');
+const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+
+if (isBirthday && lastShown !== todayStr) {
+  // إنشاء النافذة المنبثقة
+  const birthdayBox = document.createElement('div');
+  birthdayBox.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;">
+      <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        font-family: sans-serif;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        animation: popIn 0.6s ease;">
+        <h2 style="color:#ff4081;">🎉 My dear Ritaj 🎉</h2>
+        <p style="color:#ff4081;"> It's your birthday, The North remembers💖</p>
+        <button id="closeBirthday" style="
+          margin-top: 15px;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 8px;
+          background: #ff4081;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;">Thanks 💕</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(birthdayBox);
+
+  // عند الضغط على زر الإغلاق
+  document.getElementById('closeBirthday').addEventListener('click', () => {
+    birthdayBox.remove();
+  });
+
+  // حفظ التاريخ لمنع تكرار العرض في نفس اليوم
+  localStorage.setItem('birthdayMessageShown', todayStr);
+}
+
+// تأثير بسيط للظهور
+const style = document.createElement('style');
+style.textContent = `
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}`;
+document.head.appendChild(style);
 
     </script>
 </body>
