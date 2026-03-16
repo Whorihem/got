@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة العروش | جميع المواسم</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+    
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #0a0a12;
+      color: white;
+    }
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background-color: #000;
+    }
+    
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.5rem;
+    }
+    
+    .episode-item {
+      transition: all 0.3s;
+      border-right: 3px solid transparent;
+      background-color: #141428;
+    }
+    
+    .episode-item:hover {
+      background-color: #1f1f40;
+      transform: translateX(-5px);
+    }
+    
+    .episode-item.current-episode {
+      background-color: #1a1a2e;
+      border-right-color: #4169e1;
+    }
+    
+    .episode-thumbnail {
+      width: 140px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 0.25rem;
+      margin-left: 1rem;
+    }
+    
+    .season-dropdown {
+      display: none;
+      position: absolute;
+      background-color: #1a1a2e;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 50;
+      right: 0;
+      border-radius: 0.5rem;
+      border: 1px solid #2a3a6a;
+    }
+    
+    .season-dropdown.show {
+      display: block;
+    }
+    
+    .season-dropdown a {
+      color: white;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      border-bottom: 1px solid #2a3a6a;
+      cursor: pointer;
+    }
+    
+    .season-dropdown a:hover {
+      background-color: #4169e1;
+    }
+    
+    .season-btn {
+      background-color: #1a1a2e;
+      border: 1px solid #4169e1;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+    }
+    
+    .season-btn:hover {
+      background-color: #4169e1;
+    }
+    
+    .age-rating {
+      background-color: #eed740;
+      color: black;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    
+    .nav-button {
+      background-color: #1a1a2e;
+      color: white;
+      border: 1px solid #edf05d;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+    
+    .nav-button:hover {
+      background-color: #4169e1;
+      border-color: #4169e1;
+    }
+    
+    .info-section {
+      background: linear-gradient(145deg, #141428 0%, #0f0f20 100%);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    
+    .episode-badge {
+      background-color: #4169e1;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body class="text-white">
+
+  <div class="container max-w-6xl mx-auto px-4 py-6">
+    <!-- رأس الصفحة مع زر الموسم -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold mb-4 md:mb-0">🎬 لعبة العروش - جميع المواسم</h1>
+      
+      <!-- زر اختيار الموسم -->
+      <div class="relative">
+        <button id="seasonBtn" class="season-btn">
+          <span id="seasonBtnText">الموسم الأول</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="seasonDropdown" class="season-dropdown">
+          <!-- المواسم ستضاف تلقائياً عبر JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- مشغل الحلقات -->
+    <div id="episodePlayer" class="w-full mb-6 hidden">
+      <div class="video-container rounded-lg overflow-hidden shadow-2xl">
+        <iframe id="mainVideo" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- منطقة المعلومات (تتبدل بين الموسم والحلقة) -->
+    <div id="infoArea" class="info-section">
+      <!-- معلومات الموسم (تظهر افتراضياً) -->
+      <div id="seasonInfo">
+        <div class="flex items-center gap-3 mb-3">
+          <h2 id="seasonTitle" class="text-2xl font-bold"></h2>
+          <span class="age-rating">بدون لقطات</span>
+        </div>
+        <p id="seasonMeta" class="text-gray-300 text-lg mb-3"></p>
+        <p id="seasonBio" class="text-gray-400 leading-relaxed"></p>
+      </div>
+      
+      <!-- معلومات الحلقة (تظهر عند التشغيل) -->
+      <div id="episodeInfo" class="hidden">
+        <div class="flex items-center gap-3 mb-3">
+          <h2 id="episodeTitle" class="text-2xl font-bold"></h2>
+          <span class="episode-badge">الحلقة الحالية</span>
+        </div>
+        <p id="episodeRating" class="text-yellow-400 text-xl font-bold mb-3"></p>
+        <p id="episodeDescription" class="text-gray-400 leading-relaxed"></p>
+      </div>
+    </div>
+
+    <!-- أزرار التنقل بين الحلقات -->
+    <div id="episodeNav" class="flex justify-between items-center mb-6 hidden">
+      <button id="prevEpisodeBtn" class="nav-button flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        الحلقة السابقة
+      </button>
+      <button id="nextEpisodeBtn" class="nav-button flex items-center gap-2">
+        الحلقة التالية
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- قائمة الحلقات -->
+    <div class="mt-8">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span>📺 قائمة الحلقات</span>
+        <span id="episodesCount" class="text-sm bg-gray-700 px-3 py-1 rounded-full"></span>
+      </h2>
+      <div id="episodesList" class="space-y-2"></div>
+    </div>
+
+    <!-- زر العودة -->
+    <div class="flex justify-center mt-8">
+      <a href="home.html">
+        <button class="nav-button px-6 py-3">
+          ← العودة إلى الصفحة الرئيسية
+        </button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // بيانات المواسم والحلقات
+    const seasons = {
+      1: {
+        title: "الموسم الأول",
+        bio: "بداية الصراع على العرش الحديدي عندما يصل نيد ستارك إلى العاصمة. رجل نبيل من الشمال يُستدعى إلى العاصمة، فيجد نفسه وسط مؤامرات وصراعات سياسية تهدد استقرار المملكة.",
+        episodes: [
+          { id: 1, title: "الحلقة 1: الشتاء قادم", rating: "IMDB: 8.9/10", description: "بداية الأحداث في وينترفل حيث عائلة ستارك تستعد لزيارة الملك روبرت.", thumbnail: "https://i.pinimg.com/736x/d5/40/95/d5409539f9c3854731246c943e8eee69.jpg", videoUrl: "https://drive.google.com/file/d/1ae3RTaUxVXcWhG4PAH73u7fENligFT9A/preview" },
+          { id: 2, title: "الحلقة 2: طريق الملوك", rating: "IMDB: 8.6/10", description: "نيد ستارك يرافق الملك إلى العاصمة بينما تبدأ المؤامرات في الظهور.", thumbnail: "https://m.media-amazon.com/images/M/MV5BYjYxYjMxZGYtMGIzMi00NTY2LWI0MWMtNGJiMzhjYjkwNmI4XkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg", videoUrl: "https://drive.google.com/file/d/1u_5M9L30MUTAEA2GzE2qQcRFYVqtcc_G/preview" },
+          { id: 3, title: "الحلقة 3: لورد سنو", rating: "IMDB: 8.5/10", description: "جون سنو ينضم إلى حرس الليل بينما كاتلين تطالب بالعدالة.", thumbnail: "https://m.media-amazon.com/images/M/MV5BMmZmM2M4ODgtZmM4YS00ZDU0LWJmNTMtOTVkM2RhMGQ0NjIwXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg", videoUrl: "https://drive.google.com/file/d/1oxX9Z3wYQoRAfiHwZESBcXDtC2T01Su1/preview" },
+          { id: 4, title: "الحلقة 4: مقعدون, ولقطاء, واشياء مكسورة", rating: "IMDB: 8.6/10", description: "تطورات مثيرة في العاصمة وفي الشمال.", thumbnail: "https://m.media-amazon.com/images/M/MV5BYWJjMWI0MTctYmY3ZS00NWE4LTk5NmUtMmExNDU4ZmViN2VmXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg", videoUrl: "https://drive.google.com/file/d/1dOekeIDTnf-nEuTXP3WScDAPMnNLJEER/preview" },
+          { id: 5, title: "الحلقة 5: الذئب والاسد", rating: "IMDB: 9.0/10", description: "صراع بين آل ستارك وآل لانستر يشتعل.", thumbnail: "https://m.media-amazon.com/images/M/MV5BZTRkM2NkOWItNjg1MC00NTFhLTgzOGItYjhjYmM3ZmUwZTVhXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg", videoUrl: "https://drive.google.com/file/d/1fEnRlAzdcxLzLx2_1pedm5tgKCXk3k7S/preview" },
+          { id: 6, title: "الحلقة 6: تاج ذهبي", rating: "IMDB: 9.1/10", description: "فيسيريس تارجارين يواجه مصيره.", thumbnail: "https://m.media-amazon.com/images/M/MV5BNzQ3MjU4OTEwN15BMl5BanBnXkFtZTcwMTg0ODg5NA@@._V1_QL75_UY562_CR232,0,380,562_.jpg", videoUrl: "https://drive.google.com/file/d/1uMMmo9Jvc8odDo582_x7VGHZDlYyrtyy/preview" },
+          { id: 7, title: "الحلقة 7: اما تفوز او تموت", rating: "IMDB: 9.1/10", description: "نيد ستارك يواجه الحقيقة المروعة.", thumbnail: "https://m.media-amazon.com/images/M/MV5BNTcwMjgzNTItZjA1Mi00Y2U1LTg2YjAtOWNiN2MzYWNlZDhjXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg", videoUrl: "https://drive.google.com/file/d/14gm91BkS0EuyMf7RCRjelP069AMKXmB5/preview" },
+          { id: 8, title: "الحلقة 8: النهاية الحادة", rating: "IMDB: 8.9/10", description: "الأحداث تتصاعد في وينترفل.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe0bm_XP086JWbirr6Wqh9HKZoycwzmMi76w&s", videoUrl: "https://drive.google.com/file/d/1QWKKn1FiImt3yXp64RQw3XPbQhZRZ9PT/preview" },
+          { id: 9, title: "الحلقة 9: بايلور", rating: "IMDB: 9.6/10", description: "لحظة حاسمة في تاريخ العرش الحديدي.", thumbnail: "https://m.media-amazon.com/images/M/MV5BMGY0YTYyMmQtMjhiYi00Yzc5LWIxZmYtZDVhODFlNDcyZjhjXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg", videoUrl: "https://drive.google.com/file/d/1HjcogSwd-lFCpZbg5PDnxDtxxlbUN3QI/preview" },
+          { id: 10, title: "الحلقة 10: نار و دم", rating: "IMDB: 9.4/10", description: "نهاية مثيرة للموسم الأول مع تطورات كبيرة.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPtiyM1P_OiNI99N5Y7SNVqmMVw92TsTu-5w&s", videoUrl: "https://drive.google.com/file/d/1gQgZCpEF7nT1GUUWdx_W2dtg5TDGu67v/preview" }
+        ]
+      },
+      2: {
+        title: "الموسم الثاني",
+        bio: "الحرب تشتعل بين الملوك الخمسة بينما تحاول العائلات الكبرى السيطرة على العرش الحديدي.",
+        episodes: [
+          { id: 1, title: "الحلقة 1: الشمال يتذكر", rating: "IMDB: 8.6/10", description: "بداية الحرب بين الملوك الخمسة.", thumbnail: "https://m.media-amazon.com/images/M/MV5BOWU1MGMyZWMtN2U1MS00YWYxLWJhYWItZjkyNzFmMzAxZGM4XkEyXkFqcGdeQXRyYW5zY29kZS13b3JrZmxvdw@@._V1_.jpg", videoUrl: "https://drive.google.com/file/d/1yhJ5tyYuZdp8rtqtplHCg7syui72gVor/preview" },
+          { id: 2, title: "الحلقة 2: أراضي الليل", rating: "IMDB: 8.3/10", description: "جون سنو يواجه تحديات جديدة.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT82IqCTTEvVxmeU25Wk5sQWRrhoUUHWiCutw&s", videoUrl: "https://drive.google.com/file/d/1J290hF74yanHTOmTHeORd8-dIMDTMEt1/preview" },
+          { id: 3, title: "الحلقة 3: الذي مات ربما لم يمت", rating: "IMDB: 8.7/10", description: "تحالفات جديدة تتشكل.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/587b66d8-ab0b-3ac7-ab7c-58582fdcfd2a.jpeg", videoUrl: "https://drive.google.com/file/d/1Lv9xOT_sLF7Jc6YfmQ58OH_VjromSCmF/preview" },
+          { id: 4, title: "الحلقة 4: حديقة العظام", rating: "IMDB: 8.6/10", description: "معركة شرسة تلوح في الأفق.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/6e978756-92fd-3b3b-a377-b9c64d3e6760.jpeg", videoUrl: "https://drive.google.com/file/d/1PdW_tTypB6YCWV-cGG87VPSQC6znF4hU/preview" },
+          { id: 5, title: "الحلقة 5: شبح هارنهول", rating: "IMDB: 8.6/10", description: "أسرار الماضي تظهر.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/3fa605f2-b5d1-3bda-b361-6dbb9de093df.jpeg", videoUrl: "https://drive.google.com/file/d/1MqPD5yGWpVOteHhwPxC8gBEI0kvDQk7j/preview" },
+          { id: 6, title: "الحلقة 6: الالهة القديمة و الجديدة", rating: "IMDB: 8.9/10", description: "الصراع على السلطة يشتعل.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTktESC7_JW9iaaVYnvKOljFaBbOomAr3sM_Q&s", videoUrl: "https://drive.google.com/file/d/1ItqEvwCwuCiYOxs3dpL6ooXDdISR8zW1/preview" },
+          { id: 7, title: "الحلقة 7: رجل بلا شرف", rating: "IMDB: 8.8/10", description: "خيانة غير متوقعة تهز الجميع.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSfXojwyXX0WLpswPnlDlvWqk3XE_jTw8kPA&s", videoUrl: "https://drive.google.com/file/d/1NX-LFPDpQ7IRxI8CB43FhBH1Y1gmaQBv/preview" },
+          { id: 8, title: "الحلقة 8: أمير وينترفل", rating: "IMDB: 8.6/10", description: "ثيون يختار جانبه.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUC0-ZMbH-gKDGUxGm3jMJbV7Gda22cDXUiA&s", videoUrl: "https://drive.google.com/file/d/1CybEgRR1JKeLIfXornr41l_7i91C9npf/preview" },
+          { id: 9, title: "الحلقة 9: بلاك ووتر", rating: "IMDB: 9.7/10", description: "معركة بلاك ووتر الأسطورية.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/00fc4e36-b18d-3d0a-a2f6-cc9880ecc7cc.jpeg", videoUrl: "https://drive.google.com/file/d/1PRcktMPl0I7ScVHdCHQjJXtPLwMGmj7p/preview" },
+          { id: 10, title: "الحلقة 10: فالار مورغوليس", rating: "IMDB: 9.3/10", description: "كل الرجال يجب أن يموتوا - نهاية الموسم.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfF6_ssnWU_UOL-qa-_QTM-tAeXNam6tFM3g&s", videoUrl: "https://drive.google.com/file/d/19QX6AjaSJhe5n2UeBOsxScNyriqbClt7/preview" }
+        ]
+      },
+      3: {
+        title: "الموسم الثالث",
+        bio: "التحالفات تتغير والانتقام يبدأ في أكثر موسم صادم.",
+        episodes: [
+          { id: 1, title: "الحلقة 1: فالار دوهاريس", rating: "IMDB: 8.6/10", description: "كل الرجال يجب أن يخدموا.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/53532aa4-1284-3b32-84fe-b1931862c929.jpeg", videoUrl: "https://drive.google.com/file/d/1rur-Cgd3mgBoi_qj5Gcoq5ggQqVgH6P1/preview" },
+          { id: 2, title: "الحلقة 2: أجنحة الظلام, وكلمات الظلام", rating: "IMDB: 8.4/10", description: "أخبار سيئة تصل من كل مكان.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNtrU1pk-NWZani95wkhZ3oTo7a0rVoRXY3Q&s", videoUrl: "https://drive.google.com/file/d/1yManxekgqGZWEmv59VCoF8n9veks0YLk/preview" },
+          { id: 3, title: "الحلقة 3: مشية العقاب", rating: "IMDB: 8.7/10", description: "جون سنو في موقف صعب.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/5525c8cc-c9fc-3fa8-8522-0451e87d1df4.jpeg", videoUrl: "https://drive.google.com/file/d/1EU84yzsQ1b-f1GlR9cwAQRMcSEvKnzlY/preview" },
+          { id: 4, title: "الحلقة 4: وانتهت حراسته الان", rating: "IMDB: 9.5/10", description: "لحظة مؤثرة في تاريخ المسلسل.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/57d44942-59b5-3485-930c-1d44d51dad87.jpeg", videoUrl: "https://drive.google.com/file/d/1cuj-n44XFESnZWnBwZIiaXc9IkROiB8Q/preview" },
+          { id: 5, title: "الحلقة 5: قبلته النار", rating: "IMDB: 8.9/10", description: "دنيري تكتسب قوة جديدة.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMuWszWi92OQ6jXpcd0xP1lnhS2tdMO3avfA&s", videoUrl: "https://drive.google.com/file/d/1pD-WG53acKfoRLqa2seZSFv823tijZIo/preview" },
+          { id: 6, title: "الحلقة 6: التسلق", rating: "IMDB: 8.7/10", description: "الجميع يتسلق سلم السلطة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/b0394adf-ca5e-3c46-b0cc-116931c56aae.jpeg", videoUrl: "https://drive.google.com/file/d/1lxmi61W2IuzGi_Xu1ZnGevzK46sZInoO/preview" },
+          { id: 7, title: "الحلقة 7: الدب و العذراء الجميلة", rating: "IMDB: 8.6/10", description: "مفاجآت في كل مكان.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/62f54d04-113e-3072-a21d-5a06d2469d16.jpeg", videoUrl: "https://drive.google.com/file/d/1FVqcmMty3zEvg0xZBpQm1e6aUSs5t-Fc/preview" },
+          { id: 8, title: "الحلقة 8: أبناء ثانون", rating: "IMDB: 8.9/10", description: "المآسي تتوالى.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/d776590d-3866-30e9-9273-01b6371745f2.jpeg", videoUrl: "https://drive.google.com/file/d/1gGk1Kgs9p5iaMp4aF-VbIT6Cge0eNfOa/preview" },
+          { id: 9, title: "الحلقة 9: أمطار كاستمير", rating: "IMDB: 9.9/10", description: "أشهر حلقة في المسلسل - الزفاف الأحمر.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/3b814892-8b31-3b0f-aadc-625d08084082.jpeg", videoUrl: "https://drive.google.com/file/d/109qMnshGKPePNpT1l69oD_2Zg1ABd1sc/preview" },
+          { id: 10, title: "الحلقة 10: ميسا", rating: "IMDB: 9.1/10", description: "نهاية الموسم مع تطورات صادمة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/06d0f8ac-742c-3ae9-8938-479c759756ba.jpeg", videoUrl: "https://drive.google.com/file/d/1j59ugb4D09hHqEV-OTajvU0JD6S4ecrj/preview" }
+        ]
+      },
+      4: {
+  title: "الموسم الرابع",
+  bio: "التحولات الكبرى تحدث، والحروب القديمة والجديدة تصعد على الجدار الحديدي.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: سيفان", rating: "IMDB: 9.0/10", description: "الحرب تتصاعد، والشمال يتحرك.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/ed341326-e9fc-3726-8386-2a098f8d8987.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/12-EmR-gb9AYJeA973TsIiDW7jRJzRVRg/preview" },
+    { id: 2, title: "الحلقة 2: الأسد و الزهرة", rating: "IMDB: 9.7/10", description: "التحالفات تتغير بين العائلات الكبرى.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/5477d988-7731-31b8-8f41-76cf07192b08.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1puGKOw-Fu2DAoxfDFsLg60NsfsAIRMLl/preview" },
+    { id: 3, title: "الحلقة 3: محطة الأغلال", rating: "IMDB: 8.7/10", description: "التوتر يتصاعد في الجنوب.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/0a6306ca-cd2a-3fa6-aca2-486de26c4a20.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1NW91Ionak8mTnk3XTFgSmpyVslo8-3lE/preview" },
+    { id: 4, title: "الحلقة 4: حافظ العهد", rating: "IMDB: 8.7/10", description: "مؤامرات جديدة تظهر.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/40eb7c3c-2f81-3bd5-9825-7e953dca7a6f.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1grOfLEX2FyrwojWvQFbjBYBD2pzFSfyN/preview" },
+    { id: 5, title: "الحلقة 5: الأول من اسمه", rating: "IMDB: 8.6/10", description: "أسرار الماضي تكشف.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa2VWcbe_DJ1iD2hXgvn6oZ6-EewLNxKuHTQ&s", videoUrl: "https://drive.google.com/file/d/18niLDbf0HmMkwHRZFpuYzcAJPMfMEd3P/preview" },
+    { id: 6, title: "الحلقة 6: قوانين الالهة و الرجال", rating: "IMDB: 9.7/10", description: "المعارك تتفاقم بين العائلات.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR65QlP2DCE7wuuaA4sLFnTDpw9RJKvh-vJtQ&s", videoUrl: "https://drive.google.com/file/d/1Dsusru7S4_F1LmSSGHHuaDsyT_MV34wa/preview" },
+    { id: 7, title: "الحلقة 7: الطائر المحاكي", rating: "IMDB: 9.0/10", description: "تحالفات غير متوقعة تحدث.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/3df4b220-6915-3ce6-8415-4dcf63b4394d.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/15oCKRwnJYdo2CSitAfw56c6wmKlcVbDe/preview" },
+    { id: 8, title: "الحلقة 8: الجبل و الافعى", rating: "IMDB: 9.7/10", description: "السلطة تتحرك في كل مكان.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/79db2283-6f16-3d3a-aa9e-bd7443518aba.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1w1b0NLh5L-VYEeyHRixIOhgdHNfu_U7z/preview" },
+    { id: 9, title: "الحلقة 9: الحراس على الجدار", rating: "IMDB: 9.6/10", description: "التهديدات تتجمع على الحدود.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQ7dYh7PxKBnQ7-O1oAnIIzbzAe-Vgc_Zf-A&s", videoUrl: "https://drive.google.com/file/d/1w9K_FjuuD5FTa0uJp1aonh6zBBB25o0q/preview" },
+    { id: 10, title: "الحلقة 10: الأطفال", rating: "IMDB: 9.7/10", description: "نهاية الموسم مع أحداث صادمة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/13a327af-12e2-377e-9d3f-360756f8cd1a.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1fXvT54n1YJAg4YDjTaGnTDriuQOVxXKA/preview" }
+  ]
+},
+5: {
+  title: "الموسم الخامس",
+  bio: "الفتن تتعمق والحروب القادمة ترسم ملامح المستقبل على الجدار الحديدي.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: الحروب القادمة", rating: "IMDB: 8.3/10", description: "الحروب القادمة تظهر مع صراع جديد.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/093433bc-8ef1-31c5-8e95-205b7d4ac78e.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1Vty6KrqhYlSHCOB179F5wTFdnr7PItGR/preview" },
+    { id: 2, title: "الحلقة 2: بيت الكحلوش و الأبيض", rating: "IMDB: 8.3/10", description: "الصراعات العائلية تتصاعد بين البيوت.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/6fa8f766-3a48-3278-aeeb-a99e7f0d78bb.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1t3Duy_4NxyzQNZTWzVOMA1sAeuY8ijCg/preview" },
+    { id: 3, title: "الحلقة 3: الدوري الاعلى", rating: "IMDB: 8.3/10", description: "الهيمنة تتصارع في الدوري الأعلى.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/c9f4c916-5e13-3e26-8ddf-0831fd0d472d.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1V0KkCVgXwzYOfh0yEmdRuf38EVvWSeJI/preview" },
+    { id: 4, title: "الحلقة 4: أبناء الهاربي", rating: "IMDB: 8.5/10", description: "أبناء الهاربي يظهرون بمخططات جديدة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/16ec649f-fd3e-3b3d-aab5-a46d12ef9fe8.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1A9wQZGVAyVA7MndzmNNSI_se5nnP3sqH/preview" },
+    { id: 5, title: "الحلقة 5: اقتل الصبي", rating: "IMDB: 8.5/10", description: "أوامر صادمة تظهر في المعركة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/18d7598a-d766-3267-8080-aa1a97089b8d.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1OtmxPF5de2QZ8HXdKu5ZCLAShTTXRhYf/preview" },
+    { id: 6, title: "الحلقة 6: لا نقهر, لا ننحني, لا نكسر", rating: "IMDB: 7.9/10", description: "الإصرار يقود الأبطال في مواجهة الصعاب.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/44251585-c0ec-361d-a55e-a9e6bda5a33a.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/18BugSFta1YVYkDA7Qfl5oSE-3fDXLW4R/preview" },
+    { id: 7, title: "الحلقة 7: الهدية", rating: "IMDB: 8.8/10", description: "هدية غير متوقعة تغيّر مجرى الأحداث.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/00f4fd32-4c46-3f9b-9f0a-63c4828575d6.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1PrS30suXy2tC86GdrHe7sqewFW9rP_wP/preview" },
+    { id: 8, title: "الحلقة 8: هارهادوم", rating: "IMDB: 9.8/10", description: "هارهادوم يسيطر على الأحداث بشكل كامل.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/691aad1e-4902-3a4c-8ea1-d8521d72b896.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1iqBFajzHV6LRffW0zph9VrAnsQyuE_sb/preview" },
+    { id: 9, title: "الحلقة 9: رقصة التنانين", rating: "IMDB: 9.4/10", description: "رقصة التنانين تمثل صراع القوة النهائي.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLS1mXeftFZngtimNUIe8XG7GUCsgjFsiIrQ&s", videoUrl: "https://drive.google.com/file/d/1OzDRxdCLizbTh1OUIZnGBkxzD6Zd9nR4/preview" },
+    { id: 10, title: "الحلقة 10: رحمة الأم", rating: "IMDB: 9.1/10", description: "نهاية الموسم مع لحظات مؤثرة ومفصلية.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/2b67ccd0-1c94-3798-a6f6-f6239b44b183.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1i1-tL9StyAv4HtOgL5l3bu49jLbbFQcC/preview" }
+  ]
+},
+6: {
+  title: "الموسم السادس",
+  bio: "الظلال تتعمق والأسرار تتكشف في صراع القلوب والعرش.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: المراة الحمراء", rating: "IMDB: 8.4/10", description: "ظهور المرأة الحمراء يغيّر مجرى الأحداث.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/5f392177-c103-35b2-acee-729170a9f621.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1c8Hr_RG-ylZ1_iRCZYQ9QG-XwuPlhjOx/preview" },
+    { id: 2, title: "الحلقة 2: وطن", rating: "IMDB: 9.2/10", description: "الصراعات على الوطن تتصاعد.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/1b44b08d-3e2c-3554-a9c2-b7544b4026f0.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1N2582iPdJ-xr1xWprcj1km8ycr2hXqin/preview" },
+    { id: 3, title: "الحلقة 3: الحانث بالعهد", rating: "IMDB: 8.6/10", description: "خيانة العهد تقلب الموازين.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/86db61ff-3b47-377f-8573-2227741762b4.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1TkCLU2eTCjqB_j0Eww8wO-62Pqp9woaS/preview" },
+    { id: 4, title: "الحلقة 4: كتاب غريب", rating: "IMDB: 9.0/10", description: "اكتشاف كتاب غريب يكشف أسراراً قديمة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/eee654d5-9bb9-3b47-93ef-547f56633615.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1srXwbdo1dpOqmiczCzaQpjak7r_mPEBU/preview" },
+    { id: 5, title: "الحلقة 5: الباب", rating: "IMDB: 9.7/10", description: "الباب الغامض يقود إلى عوالم مجهولة.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRknOCkMWGf3gskFvYsrGKs-pXx9_AY3XYHsA&s", videoUrl: "https://drive.google.com/file/d/1nG_fs4vL-35a0lT4HxEqPng1KbW1Cyug/preview" },
+    { id: 6, title: "الحلقة 6: دماء دمائي", rating: "IMDB: 8.3/10", description: "الدماء تسيطر على الحروب العائلية.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRst1cYjrHWbjc9_r2o8RRUz8O1M6lfHivV2w&s", videoUrl: "https://drive.google.com/file/d/1L6xJuZx-h_0S8yP4WIeQm36h8AtvLmlt/preview" },
+    { id: 7, title: "الحلقة 7: الرجل المحطم", rating: "IMDB: 8.5/10", description: "الرجل المحطم يواجه ماضيه المظلم.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmOIDCcOyu2gBp77ylStjhqviL7uOQGsL65w&s", videoUrl: "https://drive.google.com/file/d/1w7xeWmHknImifdXEz96f9G2UJLP6YIXG/preview" },
+    { id: 8, title: "الحلقة 8: لا أحد", rating: "IMDB: 8.3/10", description: "لا أحد ينجو من المصاعب القادمة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/abcd105d-b749-34ff-9bed-7fc0f9bfedbb.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1dSQyExPzLW7g08Y73alE5ai7d8dnm-oy/preview" },
+    { id: 9, title: "الحلقة 9: معركة النغلين", rating: "IMDB: 9.9/10", description: "معركة النغلين تضع الجميع على المحك.", thumbnail: "https://imageio.forbes.com/blogs-images/erikkain/files/2016/06/GoT-E9-Snow-vs-Army-1200x675.jpg?format=jpg&height=900&width=1600&fit=bounds", videoUrl: "https://drive.google.com/file/d/1JCm-wAWo7y8TvmKUXo1fWnGSEmBCU0_g/preview" },
+    { id: 10, title: "الحلقة 10: رياح الشتاء", rating: "IMDB: 9.9/10", description: "نهاية الموسم مع عواصف قوية ودرامية.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/73b90a27-2c0f-3a9f-8fac-e39e0fd830e7.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1TJlrj9-hKn9OCmFTVI3_IyNIcrvRzYaY/preview" }
+  ]
+},
+7: {
+  title: "الموسم السابع",
+  bio: "ذروة الحروب والتنانين، واللقاءات التي تغير مجرى العرش.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: دراغونستون", rating: "IMDB: 8.5/10", description: "الوصول إلى دراغونستون وبداية الصراع.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/5a2c85c7-9690-32e8-8596-e7ea4f1bb2df.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1vtrlKZppt2LX1rsAFrLIYrg1YWug19t4/preview" },
+    { id: 2, title: "الحلقة 2: مولودة العاصفة", rating: "IMDB: 8.8/10", description: "مولودة العاصفة تظهر قوتها وتأثيرها.", thumbnail: "https://ew.com/thmb/4bzIrsHWVaNGG91JWEC3AgTqIPY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/macall-b-polay-hbo-photo-9-2000-b738a5fc1157425396d051604c00bf2a.jpg", videoUrl: "https://drive.google.com/file/d/1GDU5BH8qZl_Q76MMlo9i1USv-LaTSaM9/preview" },
+    { id: 3, title: "الحلقة 3: عدالة الملكة", rating: "IMDB: 9.1/10", description: "الملكات يفرضن عدالتهن وسط الفوضى.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/3cd622ec-f672-354f-b446-96de8d081743.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/16YUM24l9HLM5Yya20XY7gHZmVnKAjcPK/preview" },
+    { id: 4, title: "الحلقة 4: غنائم الحرب", rating: "IMDB: 9.7/10", description: "نتائج المعارك وتأثيرها على المملكة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/de23513e-ccb6-3ed9-ab17-fc4073be9d96.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1c3Kxuln6F_ZkIm8_ObwIwtMlefd38WLK/preview" },
+    { id: 5, title: "الحلقة 5: قلعة البحر الشرقية", rating: "IMDB: 8.7/10", description: "زيارة القلعة والتحديات القادمة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/a3e049ec-d559-359a-abdd-b05d866b42cd.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1Pr-DONJmhb_YUYbih5o2t5IjJ4UM89wk/preview" },
+    { id: 6, title: "الحلقة 6: خلف الجدار", rating: "IMDB: 9.0/10", description: "خلف الجدار، الأسرار تتكشف.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/f3b5879d-3f17-313e-924d-8b157b075682.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/13KPrKh_MTcYkSgp0zb1ckJnaYDNcGVR1/preview" },
+    { id: 7, title: "الحلقة 7: دراغونبيت", rating: "IMDB: 9.4/10", description: "المواجهات الكبرى تبدأ.", thumbnail: "https://preposterousprose.wordpress.com/wp-content/uploads/2017/09/the-dragon-and-the-wolf-jon-daenerys.jpg?w=584&h=329", videoUrl: "https://drive.google.com/file/d/1SzHXltmSTxTwJMOa81YwMEXeFs_c3voe/preview" },
+    { id: 8, title: "الحلقة 8: التنين و الذئب", rating: "IMDB: N/A", description: "النهاية الملحمية للموسم.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/85ccfca7-5efb-3911-b455-1066c3d27b0e.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/17v9lFizJ2ksephxkf7Rnm7JP5sWNwrMw/preview" }
+  ]
+},
+
+8: {
+  title: "الموسم الثامن",
+  bio: "ذروة الحرب على العرش الحديدي، الليالي الطويلة وانتهاء اللعبة.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: وينترفيل", rating: "IMDB: 7.6/10", description: "الوصول إلى وينترفيل واستعداد المعركة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/cad93df2-4a92-3f4c-8d32-9034838e8988.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1LCNLYkJkZu0_UNC_BKZl85QY9z-iYnXE/preview" },
+    { id: 2, title: "الحلقة 2: فارسة من الممالك السبعة", rating: "IMDB: 7.9/10", description: "ظهور فارسة من الممالك السبعة ومواجهة جديدة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/d673fa96-dfc5-320c-95f5-63a9296c6d34.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1lkhp7pg-rD3pw0UGGTB-rwZTWWXosqzl/preview" },
+    { id: 3, title: "الحلقة 3: الليلة الطويلة", rating: "IMDB: 7.5/10", description: "معركة الليلة الطويلة ضد جيش الموتى.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/8c4911a4-d40e-345f-979d-1a9684d91bab.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1O4pUY5fFOLPGs26zjK1k1sox50HjcqN7/preview" },
+    { id: 4, title: "الحلقة 4: الأخير من ال ستارك", rating: "IMDB: 5.5/10", description: "الختام الحزين لعائلة ستارك.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/1202dc52-4a84-3b9d-98ec-054041c638ea.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1wlzyzyGgkhlElZVs8ZzqzBdlsWa3f6PG/preview" },
+    { id: 5, title: "الحلقة 5: الأجراس", rating: "IMDB: 5.9/10", description: "دمار كينغز لاندينغ واللحظات الحرجة.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/90cfa819-d107-3cad-b860-ef494a848982.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/15ZTFQWnjzK6yf4SMwU9OTbzEvq7Od8cR/preview" },
+    { id: 6, title: "الحلقة 6: العرش الحديدي", rating: "IMDB: 4.0/10", description: "النهاية الكبرى وصراع العرش النهائي.", thumbnail: "https://images.cdn.prd.api.discomax.com/2023/02/09/fc71dcfe-7185-3dd9-8496-a29bfc3f1fbf.jpeg?f=jpg&q=75&w=1280&w=1200", videoUrl: "https://drive.google.com/file/d/1NiERO0a9Bu6H2oDQuR3rQbKviMmOAXes/preview" }
+  ]
+}
+    };
+
+  
+    // المتغيرات العامة
+    let currentUserId = localStorage.getItem("currentUserId") || 'guest';
+    let currentSeason = parseInt(localStorage.getItem(`lastWatchedSeason_${currentUserId}`)) || 1;
+    let currentEpisode = parseInt(localStorage.getItem(`lastWatchedEpisodeId_${currentUserId}`)) || null;
+
+    // تهيئة القائمة المنسدلة للمواسم
+    function initializeSeasonDropdown() {
+      const dropdown = document.getElementById("seasonDropdown");
+      dropdown.innerHTML = "";
+      
+      Object.keys(seasons).forEach(seasonNum => {
+        const season = seasons[seasonNum];
+        const item = document.createElement("a");
+        item.textContent = season.title;
+        item.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          loadSeason(parseInt(seasonNum));
+          dropdown.classList.remove("show");
+        };
+        dropdown.appendChild(item);
+      });
+    }
+
+    // عرض معلومات الموسم
+    function showSeasonInfo() {
+      const season = seasons[currentSeason];
+      document.getElementById("seasonTitle").textContent = season.title;
+      document.getElementById("seasonMeta").textContent = `${season.episodes.length} حلقات | مغامرات، فانتازيا`;
+      document.getElementById("seasonBio").textContent = season.bio;
+      document.getElementById("episodesCount").textContent = `${season.episodes.length} حلقة`;
+      
+      document.getElementById("seasonInfo").classList.remove("hidden");
+      document.getElementById("episodeInfo").classList.add("hidden");
+    }
+
+    // عرض معلومات الحلقة
+    function showEpisodeInfo(episode) {
+      document.getElementById("episodeTitle").textContent = episode.title;
+      document.getElementById("episodeRating").textContent = episode.rating;
+      document.getElementById("episodeDescription").textContent = episode.description || 'لا يوجد وصف متاح';
+      
+      document.getElementById("seasonInfo").classList.add("hidden");
+      document.getElementById("episodeInfo").classList.remove("hidden");
+    }
+
+    // عرض قائمة الحلقات
+    function renderEpisodes() {
+      const list = document.getElementById("episodesList");
+      list.innerHTML = "";
+      const episodes = seasons[currentSeason].episodes;
+
+      episodes.forEach(ep => {
+        const div = document.createElement("div");
+        div.className = `episode-item flex items-center p-3 rounded cursor-pointer mb-2 ${ep.id === currentEpisode ? 'current-episode' : ''}`;
+        div.setAttribute('data-episode-id', ep.id);
+        
+        div.innerHTML = `
+          <img src="${ep.thumbnail || 'https://via.placeholder.com/140x80?text=صورة'}" class="episode-thumbnail" loading="lazy" onerror="this.src='https://via.placeholder.com/140x80?text=صورة'">
+          <div class="flex-1 mr-3">
+            <h3 class="font-bold text-lg">${ep.title}</h3>
+            <p class="text-sm text-gray-400 mt-1">${ep.rating}</p>
+          </div>
+          ${ep.id === currentEpisode ? '<span class="bg-blue-600 text-xs px-3 py-1 rounded-full">مشاهَد</span>' : ''}
+        `;
+        
+        div.onclick = () => loadEpisode(ep.id);
+        list.appendChild(div);
+      });
+    }
+
+    // تحميل حلقة
+    function loadEpisode(episodeId) {
+      const episode = seasons[currentSeason].episodes.find(e => e.id === episodeId);
+      if (!episode) return;
+
+      currentEpisode = episodeId;
+
+      document.getElementById("episodePlayer").classList.remove("hidden");
+      document.getElementById("episodeNav").classList.remove("hidden");
+      document.getElementById("mainVideo").src = episode.videoUrl;
+
+      showEpisodeInfo(episode);
+
+      document.querySelectorAll(".episode-item").forEach(item => {
+        item.classList.remove("current-episode");
+        const badge = item.querySelector('.bg-blue-600');
+        if (badge) badge.remove();
+      });
+      
+      const currentItem = document.querySelector(`.episode-item[data-episode-id="${episodeId}"]`);
+      if (currentItem) {
+        currentItem.classList.add("current-episode");
+        
+        const badge = document.createElement('span');
+        badge.className = 'bg-blue-600 text-xs px-3 py-1 rounded-full';
+        badge.textContent = 'مشاهَد';
+        currentItem.querySelector('.flex-1').after(badge);
+      }
+
+      // حفظ في localStorage (تم التصحيح: currentEpisode بدلاً من currentEpisodeId)
+      localStorage.setItem(`lastWatchedSeason_${currentUserId}`, currentSeason);
+      localStorage.setItem(`lastWatchedEpisodeId_${currentUserId}`, currentEpisode);
+      
+      saveToWatchHistory(episode);
+
+      setTimeout(() => {
+        document.getElementById("episodePlayer").scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    // دالة حفظ المشاهدات العامة (لصفحة الرئيسية)
+    function saveToGlobalWatchedEpisodes(episode) {
+      const globalWatched = JSON.parse(localStorage.getItem(`watchedEpisodes_${currentUserId}`) || '[]');
+      
+      const episodeData = {
+        id: episode.id,
+        title: episode.title,
+        season: currentSeason,
+        series: 'Game of Thrones',
+        seriesTitle: 'لعبة العروش',
+        thumbnail: episode.thumbnail || '',
+        watchedAt: new Date().toISOString()
+      };
+      
+      const filtered = globalWatched.filter(ep => 
+        !(ep.id === episode.id && ep.series === 'Game of Thrones' && ep.season === currentSeason)
+      );
+      
+      filtered.unshift(episodeData);
+      const limited = filtered.slice(0, 30);
+      
+      localStorage.setItem(`watchedEpisodes_${currentUserId}`, JSON.stringify(limited));
+      console.log('تم حفظ الحلقة في المشاهدات العامة:', episode.title);
+    }
+
+    // حفظ في سجل المشاهدة
+    function saveToWatchHistory(episode) {
+      const historyKey = `watchedEpisodes_s${currentSeason}_${currentUserId}`;
+      let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+      
+      history = history.filter(ep => ep.id !== episode.id);
+      
+      history.unshift({
+        id: episode.id,
+        title: episode.title,
+        season: currentSeason,
+        watchedAt: new Date().toISOString()
+      });
+      
+      if (history.length > 10) history = history.slice(0, 10);
+      
+      localStorage.setItem(historyKey, JSON.stringify(history));
+      
+      saveToGlobalWatchedEpisodes(episode);
+    }
+
+    // تحميل الموسم
+    function loadSeason(seasonNumber) {
+      currentSeason = seasonNumber;
+      currentEpisode = null;
+
+      document.getElementById("seasonBtnText").textContent = seasons[seasonNumber].title;
+      showSeasonInfo();
+
+      document.getElementById("episodePlayer").classList.add("hidden");
+      document.getElementById("episodeNav").classList.add("hidden");
+
+      renderEpisodes();
+
+      const savedEpisode = localStorage.getItem(`lastWatchedEpisodeId_${currentUserId}`);
+      const savedSeason = localStorage.getItem(`lastWatchedSeason_${currentUserId}`);
+      
+      if (savedEpisode && savedSeason && parseInt(savedSeason) === seasonNumber) {
+        loadEpisode(parseInt(savedEpisode));
+      } else {
+        document.getElementById("episodePlayer").classList.add("hidden");
+        document.getElementById("episodeNav").classList.add("hidden");
+      }
+    }
+
+    // التنقل بين الحلقات
+    function nextEpisode() {
+      if (!currentEpisode) return;
+      
+      const episodes = seasons[currentSeason].episodes;
+      const currentIndex = episodes.findIndex(ep => ep.id === currentEpisode);
+      
+      if (currentIndex < episodes.length - 1) {
+        loadEpisode(episodes[currentIndex + 1].id);
+      }
+    }
+
+    function prevEpisode() {
+      if (!currentEpisode) return;
+      
+      const episodes = seasons[currentSeason].episodes;
+      const currentIndex = episodes.findIndex(ep => ep.id === currentEpisode);
+      
+      if (currentIndex > 0) {
+        loadEpisode(episodes[currentIndex - 1].id);
+      }
+    }
+
+    // أحداث النقر
+    document.addEventListener("DOMContentLoaded", () => {
+      initializeSeasonDropdown();
+
+      const seasonBtn = document.getElementById("seasonBtn");
+      const seasonDropdown = document.getElementById("seasonDropdown");
+
+      seasonBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        seasonDropdown.classList.toggle("show");
+      });
+
+      window.addEventListener("click", () => {
+        seasonDropdown.classList.remove("show");
+      });
+
+      document.getElementById("nextEpisodeBtn").addEventListener("click", nextEpisode);
+      document.getElementById("prevEpisodeBtn").addEventListener("click", prevEpisode);
+
+      loadSeason(currentSeason);
+    });
+
+    // دالة تغيير المستخدم
+    function setCurrentUser(userId) {
+      currentUserId = userId;
+      localStorage.setItem("currentUserId", userId);
+      
+      currentSeason = parseInt(localStorage.getItem(`lastWatchedSeason_${currentUserId}`)) || 1;
+      currentEpisode = parseInt(localStorage.getItem(`lastWatchedEpisodeId_${currentUserId}`)) || null;
+      
+      loadSeason(currentSeason);
+    }
+
+    // دالة تسجيل الخروج
+    function logout() {
+      setCurrentUser('guest');
+    }
+
+  </script>
+</body>
+</html>

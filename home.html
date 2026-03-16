@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عودة الممالك - منصة المسلسلات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c1f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+        }
+        
+        /* تأثير التوهج للبطاقات */
+        .series-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .series-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,215,0,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .series-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255,215,0,0.3);
+        }
+        
+        .series-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* شريط التمرير المخصص */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            border-radius: 10px;
+        }
+        
+        /* تأثير الخلفية المتحركة */
+        .animated-bg {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animated-bg::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.03) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* تأثير النص المتوهج */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        
+        /* تنسيق شريط التنقل */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #ffd700;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 80%;
+        }
+        
+        /* بطاقة الشخصية */
+        .character-card {
+            transition: all 0.3s ease;
+        }
+        
+        .character-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .character-card:hover img {
+            border-color: #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.3);
+        }
+        
+        /* مؤشر التحميل */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,215,0,0.1);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* تأثيرات مخصصة للمسلسلات */
+        .got-gradient {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .breakingbad-gradient {
+            background: linear-gradient(135deg, #1e3c2c 0%, #2a5238 100%);
+        }
+        
+        .thewitcher-gradient {
+            background: linear-gradient(135deg, #2d1b3a 0%, #442b55 100%);
+        }
+        
+        .strangerthings-gradient {
+            background: linear-gradient(135deg, #4a1d2c 0%, #6b2a3f 100%);
+        }
+        
+        .dark-gradient {
+            background: linear-gradient(135deg, #1a2f3f 0%, #234a5e 100%);
+        }
+        
+        .peakyblinders-gradient {
+            background: linear-gradient(135deg, #3d2b1a 0%, #5c3f28 100%);
+        }
+    </style>
+</head>
+<body class="text-white">
+    
+    <!-- شريط التنقل العلوي -->
+    <nav class="bg-black/30 backdrop-blur-lg fixed w-full z-50 border-b border-yellow-500/20">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- الشعار -->
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <i class="fas fa-crown text-yellow-500 text-2xl"></i>
+                    <span class="text-2xl font-bold glow-text">عودة الممالك</span>
+                </div>
+                
+                <!-- روابط التنقل -->
+                <div class="hidden md:flex items-center space-x-1 space-x-reverse">
+                    <a href="#home" class="nav-link text-gray-300 hover:text-yellow-500 transition">الرئيسية</a>
+                    <a href="#seriess" class="nav-link text-gray-300 hover:text-yellow-500 transition">المسلسلات</a>
+                    <a href="#popular" class="nav-link text-gray-300 hover:text-yellow-500 transition">الأكثر مشاهدة</a>
+                    <a href="#recent" class="nav-link text-gray-300 hover:text-yellow-500 transition">آخر المشاهدات</a>
+                </div>
+                
+               <!-- قائمة المستخدم - تعديل زر حسابي -->
+<div class="flex items-center space-x-3 space-x-reverse">
+    <a href="profile.html" class="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold transition flex items-center gap-2">
+        <i class="fas fa-user-circle text-xl"></i>
+        <span class="hidden md:inline">حسابي</span>
+    </a>
+    <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg transition border border-red-600/30">
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
+</div>
+        </div>
+    </nav>
+
+    <!-- قسم البطل الرئيسي المتحرك -->
+    <section id="home" class="relative h-screen animated-bg" style="background: linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);">
+        <!-- تأثيرات النجوم المتحركة -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="stars"></div>
+        </div>
+        
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="container mx-auto px-4 text-center">
+                <div class="animate__animated animate__fadeInUp">
+                    <i class="fas fa-crown text-7xl text-yellow-500 mb-6 animate-pulse"></i>
+                    <h1 class="text-6xl md:text-8xl font-black mb-4 glow-text">عودة الممالك</h1>
+                   <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+    منصتك الآمنة لمشاهدة أشهر المسلسلات العالمية بدون لقطات غير لائقة، بجودة عالية وتجربة مشاهدة ممتعة.
+</p>
+                    <div class="flex gap-4 justify-center">
+                        <a href="got.html" class="bg-yellow-500 hover:bg-yellow-400 text-black px-8 py-4 rounded-full font-bold text-lg transition flex items-center gap-2">
+                            <i class="fas fa-play"></i>
+                            ابدأ مشاهدة game of thrones
+                        </a>
+                        <a href="#popular" class="bg-white/10 hover:bg-white/20 backdrop-blur border border-yellow-500/30 px-8 py-4 rounded-full font-bold text-lg transition flex items-center gap-2">
+                            <i class="fas fa-fire"></i>
+                            استمتع
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- السهم للأسفل -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fas fa-chevron-down text-3xl text-yellow-500"></i>
+        </div>
+    </section>
+
+    
+            <!-- قسم جميع المسلسلات (صفحة منفصلة) -->
+<section id="seriess" class="py-12 px-4 bg-black/20">
+    <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">📺 اكتشف المزيد من المسلسلات</h2>
+        <p class="text-gray-400 mb-6 max-w-2xl mx-auto">لدينا المزيد من المسلسلات الحصرية والآمنة لمشاهدتها</p>
+        <a href="series.html" class="inline-block bg-yellow-500 hover:bg-yellow-400 text-black px-8 py-4 rounded-full font-bold text-lg transition transform hover:scale-105">
+            <i class="fas fa-plus-circle ml-2"></i>
+            عرض جميع المسلسلات
+        </a>
+    </div>
+</section>
+            <!-- شبكة المسلسلات -->
+           <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6" id="seriesGrid">
+                <!-- Game of Thrones -->
+                <div class="series-card got-gradient rounded-xl overflow-hidden cursor-pointer" data-category="fantasy drama" onclick="window.location.href='got.html'">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://media.filfan.com/NewsPics/FilfanNew/large/270367_0.jpg" alt="Game of Thrones" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-sm font-bold">
+                            <i class="fas fa-star"></i> 9.3
+                        </div>
+                        <div class="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm">
+                            8 مواسم
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold">Game of Thrones</h3>
+                            <span class="text-yellow-500">2025</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-3">صراع العائلات النبيلة على العرش الحديدي في ويستروس</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-1">
+                                <span class="bg-gray-700 px-2 py-1 rounded text-xs">فانتازيا</span>
+                                <span class="bg-gray-700 px-2 py-1 rounded text-xs">دراما</span>
+                            </div>
+                            <span class="text-gray-500">73 حلقة</span>
+                        </div>
+                    </div>
+                </div>
+                
+<!-- Spartacus -->
+<div class="series-card bg-gradient-to-br from-red-900 to-red-700 rounded-xl overflow-hidden cursor-pointer" data-category="action history drama" onclick="window.location.href='spartacus.html'">
+    <div class="relative h-48 overflow-hidden">
+        <img src="https://m.media-amazon.com/images/S/pv-target-images/2d8cd5431c35086c4d35996a25383e4dffa53df085d5e057051614ed39cc9cba.jpg" alt="Spartacus" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-sm font-bold">
+            <i class="fas fa-star"></i> 8.5
+        </div>
+        <div class="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm">
+            3 مواسم
+        </div>
+    </div>
+    <div class="p-4">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-xl font-bold">Spartacus</h3>
+            <span class="text-yellow-500">2010</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-3">قصة الجندي التراقي الذي تحول إلى عبد ثم قاد أعظم ثورة للعبيد ضد الإمبراطورية الرومانية</p>
+        <div class="flex justify-between items-center">
+            <div class="flex gap-1">
+                <span class="bg-gray-700 px-2 py-1 rounded text-xs">أكشن</span>
+                <span class="bg-gray-700 px-2 py-1 rounded text-xs">تاريخي</span>
+                <span class="bg-gray-700 px-2 py-1 rounded text-xs">دراما</span>
+            </div>
+            <span class="text-gray-500">33 حلقة</span>
+        </div>
+    </div>
+</div>
+
+                <!-- Stranger Things -->
+                <div class="series-card strangerthings-gradient rounded-xl overflow-hidden cursor-pointer" data-category="sci-fi horror" onclick="window.location.href='soon.html'">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://static0.cbrimages.com/wordpress/wp-content/uploads/2024/09/stranger-things-every-seasons.jpg" alt="Stranger Things" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-sm font-bold">
+                            <i class="fas fa-star"></i> 8.7
+                        </div>
+                        <div class="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm">
+                            5 مواسم
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold">Stranger Things</h3>
+                            <span class="text-yellow-500">2025</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-3">أطفال يواجهون قوى خارقة وكائنات من بُعد آخر</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-1">
+                                <span class="bg-gray-700 px-2 py-1 rounded text-xs">خيال علمي</span>
+                                <span class="bg-gray-700 px-2 py-1 rounded text-xs">رعب</span>
+                            </div>
+                            <span class="text-gray-500">34 حلقة</span>
+                        </div>
+                    </div>
+                </div>
+
+            
+
+                <!-- Vikings -->
+                <div class="series-card bg-gradient-to-br from-amber-900 to-red-900 rounded-xl overflow-hidden cursor-pointer" data-category="action history" onclick="window.location.href='soon.html'">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://vikingsfrancais.com/wp-content/uploads/2024/07/Vikings-Saison-4.jpg" alt="Vikings" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-sm font-bold">
+                            <i class="fas fa-star"></i> 8.5
+                        </div>
+                        <div class="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm">
+                            6 مواسم
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold">Vikings</h3>
+                            <span class="text-yellow-500">2024</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-3">مغامرات الفايكنج وغزواتهم عبر أوروبا</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-1">
+                                <span class="bg-gray-700 px-2 py-1 rounded text-xs">أكشن</span>
+                                <span class="bg-gray-700 px-2 py-1 rounded text-xs">تاريخي</span>
+                            </div>
+                            <span class="text-gray-500">79 حلقة</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- قسم آخر المشاهدات -->
+    <section id="recent" class="py-20 px-4">
+        <div class="container mx-auto">
+            <div class="flex justify-between items-center mb-12">
+                <div>
+                    <h2 class="text-4xl font-bold mb-2">🕐 آخر المشاهدات</h2>
+                    <p class="text-gray-400">استكمل مشاهدتك من حيث توقفت</p>
+                </div>
+                <button onclick="clearHistory()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg transition border border-red-600/30">
+                    <i class="fas fa-trash-alt ml-2"></i>
+                    مسح السجل
+                </button>
+            </div>
+            
+            <div id="recentEpisodes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- سيتم إضافتها عبر JavaScript -->
+            </div>
+            
+            <div id="noRecentEpisodes" class="text-center py-12 hidden">
+                <i class="fas fa-history text-6xl text-gray-600 mb-4"></i>
+                <p class="text-gray-400 text-xl">لا توجد مشاهدات حديثة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- تذييل الصفحة -->
+    <footer class="bg-black/50 border-t border-yellow-500/20 py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-crown text-yellow-500 text-2xl"></i>
+                        <span class="text-2xl font-bold">عودة الممالك</span>
+                    </div>
+                    <p class="text-gray-400">تم تحديث المنصفة لأنها في السابق تركز على مسلسل واحد فقط و قريبا سنستمر بنشر المزيد</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">روابط سريعة</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="home.html" class="hover:text-yellow-500 transition">الرئيسية</a></li>
+                        <li><a href="series.html" class="hover:text-yellow-500 transition">المسلسلات</a></li>
+                        <li><a href="soon.html" class="hover:text-yellow-500 transition">الأفلام</a></li>
+                        <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=lucasrihem@gmail.com" class="hover:text-yellow-500 transition">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+    <h3 class="font-bold text-lg mb-4">تابعنا</h3>
+    <div class="flex gap-4">
+        <!-- أيقونة الجيميل  -->
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=lucasrihem@gmail.com" 
+           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition"
+           title="راسلنا عبر البريد">
+            <i class="fas fa-envelope"></i>
+        </a>
+        
+        <!-- تويتر -->
+        <a href="https://x.com/Cryoverihem" 
+           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition"
+           target="_blank"
+           title="تابعنا على X (تويتر)">
+            <i class="fab fa-twitter"></i>
+        </a>
+        
+        <!-- تيك توك -->
+        <a href="https://www.tiktok.com/@rihemmaycryy" 
+           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition"
+           target="_blank"
+           title="تابعنا على تيك توك">
+            <i class="fab fa-tiktok"></i>
+        </a>
+        
+        <!-- جيثب -->
+        <a href="https://github.com/whorihem" 
+           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition"
+           target="_blank"
+           title="تابعنا على github">
+            <i class="fab fa-github"></i>
+        </a>
+    </div>
+</div>
+                <!-- استبدل قسم "تحميل التطبيق" بهذا -->
+<div>
+    <h3 class="font-bold text-lg mb-4">منصتنا</h3>
+    <p class="text-gray-400 text-sm leading-relaxed">
+        منصة عربية آمنة لمشاهدة المسلسلات العالمية بدون لقطات غير لائقة، نوفر لكم أفضل المحتوى الترفيهي النظيف.
+    </p>
+    <div class="flex items-center gap-2 mt-3">
+        <i class="fas fa-check-circle text-green-500"></i>
+        <span class="text-sm text-gray-300">محتوى آمن  و لكن ليس بنسبة كبيرة </span>
+    </div>
+</div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>جميع الحقوق محفوظة &copy; 2025 ريهام</p>
+            </div>
+        </div>
+    </footer>
+
+   <script>
+    // التحقق من تسجيل الدخول
+    document.addEventListener('DOMContentLoaded', function() {
+        const isLoggedIn = localStorage.getItem("user_logged_in");
+        if (isLoggedIn !== "true") {
+            window.location.href = "index.html";
+        }
+        
+        // ✅ جلب معرف المستخدم الحالي
+        const currentUserId = localStorage.getItem("currentUserId") || 'guest';
+        const userName = localStorage.getItem("user_name") || 'مستخدم';
+        const userEmail = localStorage.getItem("user_email") || '';
+        
+        console.log('المستخدم الحالي في home:', currentUserId, userName);
+        
+        // تحديث اسم المستخدم في الواجهة إذا وجد
+        updateUserDisplay(userName);
+        
+        // عرض آخر المشاهدات
+        displayRecentEpisodes();
+        
+        // تفعيل الفلتر
+        setupFilters();
+    });
+
+    // تحديث عرض اسم المستخدم
+    function updateUserDisplay(userName) {
+        const userBtn = document.querySelector('nav .bg-yellow-500 span');
+        if (userBtn) {
+            userBtn.textContent = userName.length > 10 ? userName.substring(0, 10) + '...' : userName;
+        }
+    }
+
+    // تسجيل الخروج
+    function logout() {
+        if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+            localStorage.removeItem("user_logged_in");
+            localStorage.removeItem("google_access_token");
+            // لا نقوم بإزالة currentUserId هنا للاحتفاظ ببيانات المستخدم
+            window.location.href = "index.html";
+        }
+    }
+
+    // عرض آخر المشاهدات (تصميم أفقي)
+    function displayRecentEpisodes() {
+        // استخدام معرف المستخدم الحالي
+        const currentUserId = localStorage.getItem("currentUserId") || 'guest';
+        const watchedEpisodes = JSON.parse(localStorage.getItem(`watchedEpisodes_${currentUserId}`) || '[]');
+        const container = document.getElementById('recentEpisodes');
+        const noEpisodesMsg = document.getElementById('noRecentEpisodes');
+        
+        container.innerHTML = '';
+        container.className = 'flex overflow-x-auto gap-4 pb-4 custom-scrollbar'; // تصميم أفقي
+        
+        if (watchedEpisodes.length === 0) {
+            noEpisodesMsg.classList.remove('hidden');
+            return;
+        }
+        
+        noEpisodesMsg.classList.add('hidden');
+        
+        watchedEpisodes.slice(0, 15).forEach(episode => {
+            const episodeElement = document.createElement('div');
+            episodeElement.className = 'flex-shrink-0 w-48 bg-gray-800/50 rounded-xl overflow-hidden hover:bg-gray-800 transition cursor-pointer transform hover:scale-105';
+            
+            // تحويل اسم المسلسل إلى رابط مناسب
+            let seriesLink = '';
+            if (episode.series === 'Game of Thrones' || episode.title.includes('Game of Thrones')) {
+                seriesLink = 'got.html';
+            } else if (episode.series === 'Spartacus' || episode.title.includes('سبارتاكوس')) {
+                seriesLink = 'spartacus.html';
+            } else if (episode.series === 'Vikings' || episode.title.includes('Vikings')) {
+                seriesLink = 'vikings.html';
+            } else if (episode.series === 'Stranger Things' || episode.title.includes('Stranger Things')) {
+                seriesLink = 'strangerthings.html';
+            } else if (episode.series === 'Breaking Bad' || episode.title.includes('Breaking Bad')) {
+                seriesLink = 'breakingbad.html';
+            } else if (episode.series === 'The Witcher' || episode.title.includes('The Witcher')) {
+                seriesLink = 'witcher.html';
+            } else {
+                seriesLink = 'got.html'; // افتراضي
+            }
+            
+            episodeElement.onclick = () => {
+                // حفظ الموسم المطلوب قبل الانتقال
+                localStorage.setItem(`lastWatchedSeason_${currentUserId}`, episode.season || 1);
+                window.location.href = seriesLink;
+            };
+            
+            // استخدام الصورة المتاحة
+            const thumbnail = episode.thumbnail || 'https://via.placeholder.com/200x120?text=مسلسل';
+            const seriesName = episode.series || episode.seriesTitle || 'مسلسل';
+            const seasonNum = episode.season || 1;
+            
+            episodeElement.innerHTML = `
+                <div class="relative">
+                    <img src="${thumbnail}" alt="${episode.title}" class="w-full h-28 object-cover" 
+                         onerror="this.src='https://via.placeholder.com/200x120?text=${seriesName}'">
+                    <div class="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full">
+                        S${seasonNum}
+                    </div>
+                </div>
+                <div class="p-3">
+                    <h3 class="font-bold text-sm truncate">${episode.title}</h3>
+                    <p class="text-xs text-gray-400 truncate">${seriesName}</p>
+                    <p class="text-xs text-yellow-500 mt-1">
+                        <i class="far fa-clock ml-1"></i>
+                        ${episode.watchedAt ? new Date(episode.watchedAt).toLocaleDateString('ar') : 'حديثاً'}
+                    </p>
+                </div>
+            `;
+            
+            container.appendChild(episodeElement);
+        });
+    }
+
+    // مسح السجل
+    function clearHistory() {
+        if (confirm('هل أنت متأكد من مسح سجل المشاهدات؟')) {
+            const currentUserId = localStorage.getItem("currentUserId") || 'guest';
+            localStorage.removeItem(`watchedEpisodes_${currentUserId}`);
+            
+            // مسح أيضاً سجلات المواسم
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(`watchedEpisodes_s`) && key.endsWith(`_${currentUserId}`)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            
+            displayRecentEpisodes();
+        }
+    }
+
+    // تفعيل الفلتر
+    function setupFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const seriesCards = document.querySelectorAll('.series-card');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // تحديث حالة الأزرار
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-yellow-500', 'text-black');
+                    b.classList.add('bg-gray-800');
+                });
+                btn.classList.remove('bg-gray-800');
+                btn.classList.add('active', 'bg-yellow-500', 'text-black');
+                
+                const filter = btn.dataset.filter;
+                
+                // تصفية المسلسلات
+                seriesCards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else {
+                        const categories = card.dataset.category;
+                        if (categories && categories.includes(filter)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    // تأثير النجوم المتحركة
+    function createStars() {
+        const starsContainer = document.querySelector('.stars');
+        if (!starsContainer) return;
+        
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+    }
+
+    // إضافة تأثير النجوم
+    const style = document.createElement('style');
+    style.textContent = `
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // إنشاء النجوم
+    createStars();
+</script>
+</body>
+</html>

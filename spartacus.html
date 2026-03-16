@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سبارتاكوس | جميع المواسم</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+    
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #2d1a1a 0%, #4a2b2b 100%);
+      color: white;
+    }
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background-color: #000;
+    }
+    
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.5rem;
+    }
+    
+    .episode-item {
+      transition: all 0.3s;
+      border-right: 3px solid transparent;
+      background-color: #2d1a1a;
+    }
+    
+    .episode-item:hover {
+      background-color: #4a2b2b;
+      transform: translateX(-5px);
+    }
+    
+    .episode-item.current-episode {
+      background-color: #6b3f3f;
+      border-right-color: #b8860b;
+    }
+    
+    .episode-thumbnail {
+      width: 140px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 0.25rem;
+      margin-left: 1rem;
+    }
+    
+    .season-dropdown {
+      display: none;
+      position: absolute;
+      background-color: #2d1a1a;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 50;
+      right: 0;
+      border-radius: 0.5rem;
+      border: 1px solid #b8860b;
+    }
+    
+    .season-dropdown.show {
+      display: block;
+    }
+    
+    .season-dropdown a {
+      color: white;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      border-bottom: 1px solid #b8860b;
+      cursor: pointer;
+    }
+    
+    .season-dropdown a:hover {
+      background-color: #b8860b;
+      color: black;
+    }
+    
+    .season-btn {
+      background-color: #2d1a1a;
+      border: 1px solid #b8860b;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+    }
+    
+    .season-btn:hover {
+      background-color: #b8860b;
+      color: black;
+    }
+    
+    .age-rating {
+      background-color: #b8860b;
+      color: black;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    
+    .nav-button {
+      background-color: #2d1a1a;
+      color: white;
+      border: 1px solid #b8860b;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s;
+    }
+    
+    .nav-button:hover {
+      background-color: #b8860b;
+      color: black;
+      border-color: #b8860b;
+    }
+    
+    .info-section {
+      background: linear-gradient(145deg, #2d1a1a 0%, #1f1212 100%);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border: 1px solid #b8860b33;
+    }
+    
+    .episode-badge {
+      background-color: #b8860b;
+      color: black;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body class="text-white">
+
+  <div class="container max-w-6xl mx-auto px-4 py-6">
+    <!-- رأس الصفحة مع زر الموسم -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold mb-4 md:mb-0">⚔️ سبارتاكوس - جميع المواسم</h1>
+      
+      <!-- زر اختيار الموسم -->
+      <div class="relative">
+        <button id="seasonBtn" class="season-btn">
+          <span id="seasonBtnText">الموسم الأول</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="seasonDropdown" class="season-dropdown">
+          <!-- المواسم ستضاف تلقائياً عبر JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- مشغل الحلقات -->
+    <div id="episodePlayer" class="w-full mb-6 hidden">
+      <div class="video-container rounded-lg overflow-hidden shadow-2xl">
+        <iframe id="mainVideo" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- منطقة المعلومات (تتبدل بين الموسم والحلقة) -->
+    <div id="infoArea" class="info-section">
+      <!-- معلومات الموسم (تظهر افتراضياً) -->
+      <div id="seasonInfo">
+        <div class="flex items-center gap-3 mb-3">
+          <h2 id="seasonTitle" class="text-2xl font-bold"></h2>
+          <span class="age-rating">بدون لقطات</span>
+        </div>
+        <p id="seasonMeta" class="text-gray-300 text-lg mb-3"></p>
+        <p id="seasonBio" class="text-gray-400 leading-relaxed"></p>
+      </div>
+      
+      <!-- معلومات الحلقة (تظهر عند التشغيل) -->
+      <div id="episodeInfo" class="hidden">
+        <div class="flex items-center gap-3 mb-3">
+          <h2 id="episodeTitle" class="text-2xl font-bold"></h2>
+          <span class="episode-badge">الحلقة الحالية</span>
+        </div>
+        <p id="episodeRating" class="text-yellow-400 text-xl font-bold mb-3"></p>
+        <p id="episodeDescription" class="text-gray-400 leading-relaxed"></p>
+      </div>
+    </div>
+
+    <!-- أزرار التنقل بين الحلقات -->
+    <div id="episodeNav" class="flex justify-between items-center mb-6 hidden">
+      <button id="prevEpisodeBtn" class="nav-button flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        الحلقة السابقة
+      </button>
+      <button id="nextEpisodeBtn" class="nav-button flex items-center gap-2">
+        الحلقة التالية
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- قائمة الحلقات -->
+    <div class="mt-8">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span>📺 قائمة الحلقات</span>
+        <span id="episodesCount" class="text-sm bg-gray-700 px-3 py-1 rounded-full"></span>
+      </h2>
+      <div id="episodesList" class="space-y-2"></div>
+    </div>
+
+    <!-- زر العودة -->
+    <div class="flex justify-center mt-8">
+      <a href="home.html">
+        <button class="nav-button px-6 py-3">
+          ← العودة إلى الصفحة الرئيسية
+        </button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // بيانات المواسم والحلقات - سبارتاكوس
+    const seasons = {
+     1: {
+  title: "الموسم الأول: الدم والرمل",
+  bio: "سبارتاكوس، جندي تراقي يخون روما فينتهي به الأمر عبدًا في مدرسة للجلادياتورز. هناك يبدأ رحلة تحوله من عبد إلى أسطورة، ويقود تمردًا ضد سيد المدرسة كوينتوس باتياتوس.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: الأفعى الحمراء", rating: "IMDB: 7.6/10", description: "يوافق سبارتاكوس، وهو رجل حر من تراقيا، على الانضمام إلى الرومان لمحاربة أعداء قبيلته. لكن خيانةً تُقلب حياته رأسًا على عقب.", thumbnail: "https://www.ancientworldmagazine.com/site/assets/files/1124/spartacus1.jpg", videoUrl: "https://drive.google.com/file/d/1hWhAlL89oZKfNxyqnhkT8TQAZyzPJoBo/preview" },
+    { id: 2, title: "الحلقة 2: سر المصارع", rating: "IMDB: 7.9/10", description: "يُستعبد سبارتاكوس في مدرسة للمصارعين، ويتعرض للابتزاز في محاولة لإجباره على الامتثال.", thumbnail: "https://stz1.imgix.net/web/contentId/16572/type/STUDIO/dimension/2560x1440/lang/en-US", videoUrl: "https://drive.google.com/file/d/1A57ltpz1HlgblWANBOAxfLLQfNl-ZySA/preview" },
+    { id: 3, title: "الحلقة 3: الأساطير", rating: "IMDB: 8.0/10", description: "يخطط سبارتاكوس لكسب المال في محاولة لرؤية زوجته مرة أخرى.", thumbnail: "https://www.melty.fr/wp-content/uploads/meltyfr/2025/12/spartacus-house-of-ashur-date-et-heure-de-sortie-episode-3.webp", videoUrl: "https://drive.google.com/file/d/1zGldMRvARTxwHBPfR_ZS7CMEDZeXvE2m/preview" },
+    { id: 4, title: "الحلقة 4: الشيء الموجود في الحفرة", rating: "IMDB: 8.3/10", description: "بعد أدائه الضعيف في الحلبة، تم إرسال سبارتاكوس إلى الحفرة، وهو مكان للألم والمعاناة.", thumbnail: "https://i0.wp.com/the-avocado.org/wp-content/uploads/2020/02/Spartacus-S01E04.jpg?resize=1659%2C768&ssl=1", videoUrl: "https://drive.google.com/file/d/1milCmWMeLpOTluWkSzRhErDHjaGQVhEu/preview" },
+    { id: 5, title: "الحلقة 5: ألعاب الظل", rating: "IMDB: 8.9/10", description: "يواجه سبارتاكوس وكريكسوس مصارعًا عملاقًا لم يُهزم قط. إذا لم يتجاوزا كراهيتهما لبعضهما البعض ويعملا كفريق واحد، فسوف يقتلهما معًا.", thumbnail: "https://s.yimg.com/ny/api/res/1.2/CH5fgV33bpTLWLKVHEiL5Q--/YXBwaWQ9aGlnaGxhbmRlcjt3PTk2MDtoPTU0MDtjZj13ZWJw/https://media.zenfs.com/en/techradar_949/73c5e09c80c726a533dfd24571e246ea", videoUrl: "https://drive.google.com/file/d/1DvfgKz56zPlV5I-rlhMKdzHU9Q9TfwnN/preview" },
+    { id: 6, title: "الحلقة 6: أشياء حساسة", rating: "IMDB: 8.5/10", description: "عندما علم سبارتاكوس بوصول زوجته غداً، خطط لهروب جريء.", thumbnail: "https://stz1.imgix.net/web/contentId/73680/type/STUDIO/dimension/2560x1440/lang/en-US?fit=max&auto=format,compress&w=412", videoUrl: "https://drive.google.com/file/d/14_12aQLWhBVwMTH_BOAZRSQxWG5YxeEC/preview" },
+    { id: 7, title: "الحلقة 7: أشياء عظيمة وأشياء مؤسفة", rating: "IMDB: 8.2/10", description: "يُجبر سبارتاكوس على لعب دور المحارب الروماني في الألعاب ضد مجموعة من التراقيين، بينما يسترجع ذكريات زوجته وكيف التقى بها.", thumbnail: "https://cdn.tvfanatic.com/uploads/2026/01/spartacus-house-of-ashur-season-1-episode-7-5.jpg", videoUrl: "https://drive.google.com/file/d/18iImota5Mu54ji9JoZo5fZUbX3vbLYEy/preview" },
+    { id: 8, title: "الحلقة 8: علامة الأخوة", rating: "IMDB: 8.3/10", description: "يشتري باتياتوس عبيداً جدداً خلال مزاد لتدريبهم كمصارعين، وتنشأ المشاكل.", thumbnail: "https://static.wixstatic.com/media/94ff92_3bedd07159224a3eb30b4c1f1b433076~mv2.jpg/v1/fill/w_980,h_653,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/94ff92_3bedd07159224a3eb30b4c1f1b433076~mv2.jpg", videoUrl: "https://drive.google.com/file/d/1UoKOK_qJ_exlk6mc5MTt0Rznm239MZyJ/preview" },
+    { id: 9, title: "الحلقة 9: عاهرة", rating: "IMDB: 8.7/10", description: "باتياتوس ينقل خبر أن سبارتاكوس سيخدم أغنى امرأة في روما.", thumbnail: "https://s.wsj.net/public/resources/images/OB-SI151_veng_E_20120322161124.jpg", videoUrl: "https://drive.google.com/file/d/1OaYC4V4aGRSVh-HHOkm9blh6Byfwl4iT/preview" },
+    { id: 10, title: "الحلقة 10: هدايا الحفلات", rating: "IMDB: 9.0/10", description: "يخوض سبارتاكوس مباراة استعراضية بمناسبة عيد ميلاد نوميريوس - لكن كريكسوس مصمم على إراقة الدماء.", thumbnail: "https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fk4qpLyIzK4HxJOoFuPKUfNtl0iW.jpg", videoUrl: "https://drive.google.com/file/d/1jcwI-s0p9WLHOHuRdyDbEQWc--MOrTjs/preview" },
+    { id: 11, title: "الحلقة 11: جروح قديمة", rating: "IMDB: 8.6/10", description: "يقف سبارتاكوس على حافة الهاوية. وفي الوقت نفسه، يخطط باتياتوس للانتقام من أعدائه.", thumbnail: "https://film-book.com/wp-content/uploads/2010/04/spartacus-blood-and-sand-old-wounds-8.jpg", videoUrl: "https://drive.google.com/file/d/13QPeksY_v1svSj7aDnLOvaDQa1-pE9vT/preview" },
+    { id: 12, title: "الحلقة 12: الوحي", rating: "IMDB: 9.0/10", description: "تنتظر لوكريشيا وباتياتوس وصول غلابر بنية الحصول على رعايته، بينما يركز سبارتاكوس انتباهه على خطته للانتقام.", thumbnail: "https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F4zrTrlJwrEhlb4hXEINx3CWDSfl.jpg", videoUrl: "https://drive.google.com/file/d/1ztuY7-M7Ec-kGRe18RCAj071_DZ6UN7d/preview" },
+    { id: 13, title: "الحلقة 13: اقتلهم جميعاً", rating: "IMDB: 9.6/10", description: "معركة ملحمية بين سبارتاكوس وإخوته المصارعين، ضد باتياتوس وحراسه.", thumbnail: "https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fm5swucvms6l49jS8XQXSB2Q5uQ1.jpg", videoUrl: "https://drive.google.com/file/d/1HytabPgflEJB2kGsIKSZgIjGzGUAC-fr/preview" }
+  ]
+},
+     2: {
+  title: "الموسم الثاني: الانتقام",
+  bio: "يكتشف سبارتاكوس المسؤوليات الجسيمة والتكاليف الباهظة لدوره الجديد كقائد للعبيد المحررين. يقود جيش العبيد عبر روما، سعياً للانتقام من جايوس كلاوديوس جلابر الذي خان زوجته. يتحول التمرد إلى حرب شاملة ضد الجمهورية الرومانية.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: الهارب", rating: "IMDB: 8.0/10", description: "يكتشف سبارتاكوس المسؤوليات الجسيمة والتكاليف الباهظة لدوره الجديد كقائد للعبيد المحررين. ويُجبر وصول كلاوديوس غلابر إلى كابوا سبارتاكوس على الحفاظ على تماسك فرقته المتمردة.", thumbnail: "https://showbizjunkies.com/wp-content/uploads/2011/11/spartacus-vengeance-brotherhood-clip.jpg", videoUrl: "https://drive.google.com/file/d/1n0RxAFpA-wvDapVYytQ3LtEaoiX_uI9z/preview" },
+    { id: 2, title: "الحلقة 2: مكان في هذا العالم", rating: "IMDB: 8.0/10", description: "يدخل المصارعون منزلًا بحثًا عن نيفيا ويحررون العبيد. ترغب لوكريشيا في إقامة طقوس للآلهة، ويعود دكتور إلى المكان الذي كان فيه قبل لقاء باتياتوس.", thumbnail: "https://spartacusvengeanceseason2episode2.wordpress.com/wp-content/uploads/2012/02/spartacus-vengeance-ep-2-7.jpg", videoUrl: "https://drive.google.com/file/d/1Sqqko_T3rd2ZAwgM5GgFluwZao3Q8TaO/preview" },
+    { id: 3, title: "الحلقة 3: الصالح العام", rating: "IMDB: 8.2/10", description: "عندما يتلقى المتمردون أخباراً عن شخص عزيز عليهم، يجب على سبارتاكوس أن يقرر ما إذا كان إنقاذ شخص واحد يستحق المخاطرة بحياة الكثيرين.", thumbnail: "https://m.media-amazon.com/images/M/MV5BMTg0Mjg5Mzc4N15BMl5BanBnXkFtZTcwMjM2NTgzNw@@._V1_.jpg", videoUrl: "https://drive.google.com/file/d/1WCJRiAjPBvOz7mUfNlggwv9b0Bhat9nA/preview" },
+    { id: 4, title: "الحلقة 4: أيادٍ فارغة", rating: "IMDB: 8.0/10", description: "يقود سبارتاكوس الناجين عبر الغابة، لكن كريكسوس ينفصل عنهم ويعود إلى مكانٍ شهد معاناةً سابقة. تتدخل لوكريشيا في شؤون إيليثيا، ساعيةً إلى كسب نفوذٍ لدى رومانيٍّ قوي.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Viva-Bianca-and-Craig-Parker-Spartacus-Vengeance-Empty-Hands.jpg?q=50&fit=crop&w=570&dpr=1.5", videoUrl: "https://drive.google.com/file/d/158g717PCf9O9oF-DGM_0802ZeiH4yH-j/preview" },
+    { id: 5, title: "الحلقة 5: ليبرتوس", rating: "IMDB: 9.2/10", description: "يقود سبارتاكوس مهمة جريئة لتحرير كريكسوس من الأسر الروماني، لكن مصارعًا أسطوريًا من آل باتياتوس يُعقّد الأمور. وتُعرّض مكائد إيليثيا زواجها من غلابر للخطر.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Dustin-Clare-as-Gannicus-SpartacusVengeance-Libertus.jpg?w=1200&h=628&fit=crop", videoUrl: "https://drive.google.com/file/d/1ReoE5vhqVGKBqsMSCKE54zYEF2mhHKn5/preview" },
+    { id: 6, title: "الحلقة 6: المسار المختار", rating: "IMDB: 8.0/10", description: "يحث سبارتاكوس ثواره المتلهفين على التدرب للدفاع عن ملاذهم الجديد. وتجد لوكريشيا وإيليثيا العزاء في بعضهما البعض، بينما تتضخم قوات غلابر ببعض المجندين الجدد الأشد فتكًا.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Liam-McIntyre-and-Dustin-Clare-Spartacus-Vengeance-Chosen-Path.jpg", videoUrl: "https://drive.google.com/file/d/1RA7pkI-coL1S2NSZ8xWabSvX2AISjcaK/preview" },
+    { id: 7, title: "الحلقة 7: ساكرامنتوم", rating: "IMDB: 8.5/10", description: "يسعى سبارتاكوس ومتمردوه إلى زيادة أعدادهم بتحرير المقاتلين المستعبدين في الحروب الخارجية. وتسعى لوكريشيا إلى تجنيد أحد مصارعي زوجها السابقين للتغلب على الرومان الأقوياء.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Dustin-Clare-as-Gannicus-Spartacus-Vengeance-Sacramentum.jpg?w=1200&h=628&fit=crop", videoUrl: "https://drive.google.com/file/d/16iZPXDbAP9JOW8FFfyj0TPx1PG_ooQLO/preview" },
+    { id: 8, title: "الحلقة 8: التوازن", rating: "IMDB: 8.3/10", description: "تُتاح لسبارتاكوس فرصة للانتقام عندما يُؤسر أحد الشخصيات الرومانية البارزة، لكن هل سيُشبع رغباته على حساب المصلحة العامة؟ وتزداد المؤامرات بين غلابر والنساء المحيطات به.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Liam-McIntyre-Spartacus-Vengeance-Balance.jpg?w=1200&h=628&fit=crop", videoUrl: "https://drive.google.com/file/d/14i7y9gNsUK8kI4r8o8KklXMGPsDE4s4r/preview" },
+    { id: 9, title: "الحلقة 9: الوحوش", rating: "IMDB: 8.8/10", description: "يجب على سبارتاكوس إقناع شعبه بالتوحد ضد الهجوم الروماني. تناضل لوكريشيا من أجل التحرر من أوامر الرجال الذين يهددون مصيرها. قسوة غلابر لها عواقب وخيمة.", thumbnail: "https://s.yimg.com/ny/api/res/1.2/ws2baPKhOlDQDYsURL7KIw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTQyMDtoPTI4ODtjZj13ZWJw/https://media.zenfs.com/en_us/News/TVGuideTV/120323Spartacusvengeance_manubennett1.jpg", videoUrl: "https://drive.google.com/file/d/1gcxVqnQN-q4-r0WyC85yQ_G6TshpOqiU/preview" },
+    { id: 10, title: "الحلقة 10: غضب الآلهة", rating: "IMDB: 9.3/10", description: "سبارتاكوس وعدد قليل من الناجين محاصرون على قمة بركان فيزوف. جلابر وآشور يحرسان المدخل.", thumbnail: "https://resizing.flixster.com/-XGN02ThrCDHWPBntgjAMcJLk7o=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p7931583_i_h9_aa.jpg", videoUrl: "https://drive.google.com/file/d/15ntoSjZNmn-jEvsEO9y4aNXFTnQhzgJR/preview" }
+  ]
+},
+     3: {
+  title: "الموسم الثالث: حرب الملعونين",
+  bio: "يُجمّع سبارتاكوس جيشاً هائلاً. وتضطر القوى الرومانية اليائسة إلى اللجوء إلى ماركوس كراسوس للمساعدة في الحملة ضد التمرد. في الموسم الأخير، يقترب جيش سبارتاكوس من حريته ولكن روما ترسل أفضل جنرالاتها لسحق التمرد نهائياً.",
+  episodes: [
+    { id: 1, title: "الحلقة 1: أعداء روما", rating: "IMDB: 8.6/10", description: "يُجمّع سبارتاكوس جيشاً هائلاً. وتضطر القوى الرومانية اليائسة إلى اللجوء إلى ماركوس كراسوس للمساعدة في الحملة ضد التمرد.", thumbnail: "https://ccpopculture.com/wp-content/uploads/2013/02/spartacus-s3-e1359795327754.jpg", videoUrl: "https://drive.google.com/file/d/10M5CbTo3PjbAOyaRmsWIqfA_9wIDU1hS/preview" },
+    { id: 2, title: "الحلقة 2: الذئاب على البوابة", rating: "IMDB: 8.4/10", description: "يقود سبارتاكوس هجومًا جريئًا لتوفير الطعام والمأوى لشعبه. ويبني كراسوس جيشًا هائلاً ويستقبل زائرًا غير متوقع.", thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScXeZBusN__7HBCW5l9Qjn3cEUWVnZ3wsT4A&s", videoUrl: "https://drive.google.com/file/d/1tIXDUDtwSdQg0QFGjZBJ4DyUw9YtGjlI/preview" },
+    { id: 3, title: "الحلقة 3: رجال الشرف", rating: "IMDB: 8.2/10", description: "يفكر سبارتاكوس في عقد صفقة مع عصابة من الغزاة لضمان استمرار إمدادات شعبه من الطعام والشراب. ويتخذ تيبيريوس، ابن كراسوس، قرارًا جريئًا ومصيريًا.", thumbnail: "https://m.media-amazon.com/images/S/pv-target-images/3c83526ab85b2f81e3dd850330c2206d7f3528f6d6ae028ced018b8d70538aa0.jpg", videoUrl: "https://drive.google.com/file/d/1gHAPzkw-Y3e-Oa0m3y2riSujV0au98vp/preview" },
+    { id: 4, title: "الحلقة 4: التخفيض", rating: "IMDB: 8.4/10", description: "يؤدي تسلل جاسوس روماني إلى تصاعد التوتر بين المتمردين. فيُعيد كراسوس إحياء شكل مهجور من أشكال العقاب الروماني لتلقين جنوده درساً قاسياً.", thumbnail: "https://ccpopculture.com/wp-content/uploads/2013/02/spartacus-s3-e1361867662970.jpg", videoUrl: "https://drive.google.com/file/d/1nZtnMjW2_7fCu2VMxKT111Zk2jphxfuW/preview" },
+    { id: 5, title: "الحلقة 5: إخوة الدم", rating: "IMDB: 8.8/10", description: "يضع سبارتاكوس خطةً لإضعاف قوات كراسوس وكسب اليد العليا. لكن الخيانة تهدد بإفشال الخطة.", thumbnail: "https://cdn.mos.cms.futurecdn.net/nmXcAFc6QC5c8Jb5VmqpWV-1200-80.jpg", videoUrl: "https://drive.google.com/file/d/1R6anHLKtls5kAYFVisIfurXCwnZ19SU6/preview" },
+    { id: 6, title: "الحلقة 6: غنائم الحرب", rating: "IMDB: 8.6/10", description: "بينما يقود كراسوس هجومًا على المدينة التي يحتلها المتمردون، يجد غانيكوس نفسه محاصرًا خلف خطوط العدو. ويكلف كراسوس تيبيريوس بإقامة احتفال تكريمًا لرجل يكرهه.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Todd-Lasance-in-Spartacus-WOTD-Spoils-of-War.jpg?w=1200&h=628&fit=crop", videoUrl: "https://drive.google.com/file/d/1IZ-I6WWNWb7mjnIkK2H6SxH_8JEJXJu1/preview" },
+    { id: 7, title: "الحلقة 7: الموت غير القابل للتصديق", rating: "IMDB: 8.4/10", description: "بينما يحاصر سبارتاكوس وكريكسوس على قمة جبلية مغطاة بالثلوج لا يمكن اجتيازها، يتجادلان حول طريقة الهروب. ويكتشف كراسوس أنه بات من الصعب عليه بشكل متزايد السيطرة على تصرفات أقرب الناس إليه.", thumbnail: "https://ccpopculture.com/wp-content/uploads/2013/03/spartacus-s3-e7-kore1-e1363515552155.jpg?w=700", videoUrl: "https://drive.google.com/file/d/1JI7yjARF7AHfbOK_jmxzVFmFc3tCurLp/preview" },
+    { id: 8, title: "الحلقة 8: مسارات منفصلة", rating: "IMDB: 8.9/10", description: "يصل سبارتاكوس والمتمردون إلى مفترق طرق. ومع إصرار كراسوس على قيادة رجاله بقوة في مطاردة سبارتاكوس، يتصاعد الصراع بين تيبيريوس وقيصر.", thumbnail: "https://static0.srcdn.com/wordpress/wp-content/uploads/Christian-Antidormi-in-Spartacus-WOTD-Separate-Paths.jpg?q=50&fit=crop&w=570&dpr=1.5", videoUrl: "https://drive.google.com/file/d/1uwjs4HbVoMQg7i6shTlguza5GHjFOWHC/preview" },
+    { id: 9, title: "الحلقة 9: الموتى والمحتضرون", rating: "IMDB: 9.1/10", description: "يكتشف كراسوس أن أحد الرومان البارزين يحاول سرقة شرف هزيمة سبارتاكوس. يبحث سبارتاكوس عن ورقة ضغط يمكنه استخدامها ضد الرومان.", thumbnail: "https://m.media-amazon.com/images/M/MV5BMjI1Njc2MzMyNF5BMl5BanBnXkFtZTcwODIxOTMzOQ@@._V1_.jpg", videoUrl: "https://drive.google.com/file/d/19Os4vJuO-d_lcl0eToScnVqtbRzin5a3/preview" },
+    { id: 10, title: "الحلقة 10: النصر", rating: "IMDB: 9.7/10", description: "يقوم سبارتاكوس ومتمردوه الذين يفوقهم عدداً بمحاولة أخيرة للفوز بالحرية في معركة نهائية ملحمية ضد الرومان بقيادة ماركوس كراسوس.", thumbnail: "https://sidekickreviews.wordpress.com/wp-content/uploads/2013/04/spartacus-war-of-the-damned-series-finale.jpg", videoUrl: "https://drive.google.com/file/d/1k2aM4r12XwtOOJP2gePrFFbgsVc-VMv5/preview" }
+  ]
+}
+    };
+
+    // المتغيرات العامة
+    let currentUserId = localStorage.getItem("currentUserId") || 'guest';
+    let currentSeason = parseInt(localStorage.getItem(`lastWatchedSeason_${currentUserId}`)) || 1;
+    let currentEpisode = parseInt(localStorage.getItem(`lastWatchedEpisodeId_${currentUserId}`)) || null;
+
+    // تهيئة القائمة المنسدلة للمواسم
+    function initializeSeasonDropdown() {
+      const dropdown = document.getElementById("seasonDropdown");
+      dropdown.innerHTML = "";
+      
+      Object.keys(seasons).forEach(seasonNum => {
+        const season = seasons[seasonNum];
+        const item = document.createElement("a");
+        item.textContent = season.title;
+        item.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          loadSeason(parseInt(seasonNum));
+          dropdown.classList.remove("show");
+        };
+        dropdown.appendChild(item);
+      });
+    }
+
+    // عرض معلومات الموسم
+    function showSeasonInfo() {
+      const season = seasons[currentSeason];
+      document.getElementById("seasonTitle").textContent = season.title;
+      document.getElementById("seasonMeta").textContent = `${season.episodes.length} حلقات | أكشن، تاريخي، دراما`;
+      document.getElementById("seasonBio").textContent = season.bio;
+      document.getElementById("episodesCount").textContent = `${season.episodes.length} حلقة`;
+      
+      document.getElementById("seasonInfo").classList.remove("hidden");
+      document.getElementById("episodeInfo").classList.add("hidden");
+    }
+
+    // عرض معلومات الحلقة
+    function showEpisodeInfo(episode) {
+      document.getElementById("episodeTitle").textContent = episode.title;
+      document.getElementById("episodeRating").textContent = episode.rating;
+      document.getElementById("episodeDescription").textContent = episode.description || 'لا يوجد وصف متاح';
+      
+      document.getElementById("seasonInfo").classList.add("hidden");
+      document.getElementById("episodeInfo").classList.remove("hidden");
+    }
+
+    // عرض قائمة الحلقات
+    function renderEpisodes() {
+      const list = document.getElementById("episodesList");
+      list.innerHTML = "";
+      const episodes = seasons[currentSeason].episodes;
+
+      episodes.forEach(ep => {
+        const div = document.createElement("div");
+        div.className = `episode-item flex items-center p-3 rounded cursor-pointer mb-2 ${ep.id === currentEpisode ? 'current-episode' : ''}`;
+        div.setAttribute('data-episode-id', ep.id);
+        
+        div.innerHTML = `
+          <img src="${ep.thumbnail || 'https://via.placeholder.com/140x80?text=سبارتاكوس'}" class="episode-thumbnail" loading="lazy" onerror="this.src='https://via.placeholder.com/140x80?text=سبارتاكوس'">
+          <div class="flex-1 mr-3">
+            <h3 class="font-bold text-lg">${ep.title}</h3>
+            <p class="text-sm text-gray-400 mt-1">${ep.rating}</p>
+          </div>
+          ${ep.id === currentEpisode ? '<span class="bg-blue-600 text-xs px-3 py-1 rounded-full">مشاهَد</span>' : ''}
+        `;
+        
+        div.onclick = () => loadEpisode(ep.id);
+        list.appendChild(div);
+      });
+    }
+
+    // تحميل حلقة - تم التصحيح هنا
+    function loadEpisode(episodeId) {
+      const episode = seasons[currentSeason].episodes.find(e => e.id === episodeId);
+      if (!episode) return;
+
+      // تحديث currentEpisode
+      currentEpisode = episodeId;
+
+      // إظهار المشغل وأزرار التنقل
+      document.getElementById("episodePlayer").classList.remove("hidden");
+      document.getElementById("episodeNav").classList.remove("hidden");
+      
+      // تحديث مصدر الفيديو
+      document.getElementById("mainVideo").src = episode.videoUrl;
+
+      // عرض معلومات الحلقة
+      showEpisodeInfo(episode);
+
+      // تحديث واجهة الحلقات
+      document.querySelectorAll(".episode-item").forEach(item => {
+        item.classList.remove("current-episode");
+        const badge = item.querySelector('.bg-blue-600');
+        if (badge) badge.remove();
+      });
+      
+      const currentItem = document.querySelector(`.episode-item[data-episode-id="${episodeId}"]`);
+      if (currentItem) {
+        currentItem.classList.add("current-episode");
+        
+        const badge = document.createElement('span');
+        badge.className = 'bg-blue-600 text-xs px-3 py-1 rounded-full';
+        badge.textContent = 'مشاهَد';
+        currentItem.querySelector('.flex-1').after(badge);
+      }
+
+      // ✅ تم التصحيح: currentEpisode بدلاً من currentEpisodeId
+      localStorage.setItem(`lastWatchedSeason_${currentUserId}`, currentSeason);
+      localStorage.setItem(`lastWatchedEpisodeId_${currentUserId}`, currentEpisode);
+      
+      // حفظ في سجل المشاهدة
+      saveToWatchHistory(episode);
+
+      // تمرير إلى المشغل
+      setTimeout(() => {
+        document.getElementById("episodePlayer").scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      
+      console.log('تم الحفظ:', { user: currentUserId, season: currentSeason, episode: currentEpisode });
+    }
+
+    // دالة حفظ المشاهدات العامة
+    function saveToGlobalWatchedEpisodes(episode) {
+      const globalWatched = JSON.parse(localStorage.getItem(`watchedEpisodes_${currentUserId}`) || '[]');
+      
+      const episodeData = {
+        id: episode.id,
+        title: episode.title,
+        season: currentSeason,
+        series: 'Spartacus',
+        seriesTitle: 'سبارتاكوس',
+        thumbnail: episode.thumbnail || '',
+        watchedAt: new Date().toISOString()
+      };
+      
+      const filtered = globalWatched.filter(ep => 
+        !(ep.id === episode.id && ep.series === 'Spartacus' && ep.season === currentSeason)
+      );
+      
+      filtered.unshift(episodeData);
+      const limited = filtered.slice(0, 30);
+      
+      localStorage.setItem(`watchedEpisodes_${currentUserId}`, JSON.stringify(limited));
+      console.log('تم حفظ الحلقة في المشاهدات العامة:', episode.title);
+    }
+
+    // حفظ في سجل المشاهدة
+    function saveToWatchHistory(episode) {
+      const historyKey = `watchedEpisodes_s${currentSeason}_${currentUserId}`;
+      let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+      
+      history = history.filter(ep => ep.id !== episode.id);
+      
+      history.unshift({
+        id: episode.id,
+        title: episode.title,
+        season: currentSeason,
+        watchedAt: new Date().toISOString()
+      });
+      
+      if (history.length > 10) history = history.slice(0, 10);
+      
+      localStorage.setItem(historyKey, JSON.stringify(history));
+      
+      saveToGlobalWatchedEpisodes(episode);
+    }
+
+    // تحميل الموسم
+    function loadSeason(seasonNumber) {
+      currentSeason = seasonNumber;
+      currentEpisode = null;
+
+      document.getElementById("seasonBtnText").textContent = seasons[seasonNumber].title;
+
+      showSeasonInfo();
+
+      document.getElementById("episodePlayer").classList.add("hidden");
+      document.getElementById("episodeNav").classList.add("hidden");
+
+      renderEpisodes();
+
+      const savedEpisode = localStorage.getItem(`lastWatchedEpisodeId_${currentUserId}`);
+      const savedSeason = localStorage.getItem(`lastWatchedSeason_${currentUserId}`);
+      
+      if (savedEpisode && savedSeason && parseInt(savedSeason) === seasonNumber) {
+        loadEpisode(parseInt(savedEpisode));
+      } else {
+        document.getElementById("episodePlayer").classList.add("hidden");
+        document.getElementById("episodeNav").classList.add("hidden");
+      }
+    }
+
+    // التنقل بين الحلقات
+    function nextEpisode() {
+      if (!currentEpisode) return;
+      
+      const episodes = seasons[currentSeason].episodes;
+      const currentIndex = episodes.findIndex(ep => ep.id === currentEpisode);
+      
+      if (currentIndex < episodes.length - 1) {
+        loadEpisode(episodes[currentIndex + 1].id);
+      }
+    }
+
+    function prevEpisode() {
+      if (!currentEpisode) return;
+      
+      const episodes = seasons[currentSeason].episodes;
+      const currentIndex = episodes.findIndex(ep => ep.id === currentEpisode);
+      
+      if (currentIndex > 0) {
+        loadEpisode(episodes[currentIndex - 1].id);
+      }
+    }
+
+    // أحداث النقر
+    document.addEventListener("DOMContentLoaded", () => {
+      initializeSeasonDropdown();
+
+      const seasonBtn = document.getElementById("seasonBtn");
+      const seasonDropdown = document.getElementById("seasonDropdown");
+
+      seasonBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        seasonDropdown.classList.toggle("show");
+      });
+
+      window.addEventListener("click", () => {
+        seasonDropdown.classList.remove("show");
+      });
+
+      document.getElementById("nextEpisodeBtn").addEventListener("click", nextEpisode);
+      document.getElementById("prevEpisodeBtn").addEventListener("click", prevEpisode);
+
+      loadSeason(currentSeason);
+    });
+
+    // دالة تغيير المستخدم
+    function setCurrentUser(userId) {
+      // مسح البيانات القديمة من الذاكرة المؤقتة
+      currentUserId = userId;
+      localStorage.setItem("currentUserId", userId);
+      
+      // تحميل بيانات المستخدم الجديد
+      currentSeason = parseInt(localStorage.getItem(`lastWatchedSeason_${currentUserId}`)) || 1;
+      currentEpisode = parseInt(localStorage.getItem(`lastWatchedEpisodeId_${currentUserId}`)) || null;
+      
+      // إعادة تحميل الصفحة
+      loadSeason(currentSeason);
+      
+      console.log('تم تغيير المستخدم إلى:', userId);
+    }
+
+    // دالة تسجيل الخروج
+    function logout() {
+      setCurrentUser('guest');
+    }
+  </script>
+</body>
+</html>

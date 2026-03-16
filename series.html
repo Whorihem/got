@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عودة الممالك - جميع المسلسلات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c1f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+        }
+        
+        /* تأثير التوهج للبطاقات */
+        .series-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .series-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,215,0,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .series-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255,215,0,0.3);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        .series-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* شريط التمرير المخصص */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            border-radius: 10px;
+        }
+        
+        /* تأثير النص المتوهج */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        
+        /* تنسيق شريط التنقل */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #ffd700;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 80%;
+        }
+        
+        /* مؤشر التحميل */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,215,0,0.1);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* شريط البحث */
+        .search-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus-within {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
+        }
+        
+        /* أزرار التصنيف */
+        .category-btn {
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .category-btn.active {
+            background: #ffd700;
+            color: black;
+            border-color: #ffd700;
+        }
+        
+        .category-btn:hover:not(.active) {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.1);
+        }
+        
+        /* تأثيرات مخصصة للمسلسلات */
+        .got-gradient {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .breakingbad-gradient {
+            background: linear-gradient(135deg, #1e3c2c 0%, #2a5238 100%);
+        }
+        
+        .thewitcher-gradient {
+            background: linear-gradient(135deg, #2d1b3a 0%, #442b55 100%);
+        }
+        
+        .strangerthings-gradient {
+            background: linear-gradient(135deg, #4a1d2c 0%, #6b2a3f 100%);
+        }
+        
+        .dark-gradient {
+            background: linear-gradient(135deg, #1a2f3f 0%, #234a5e 100%);
+        }
+        
+        .peakyblinders-gradient {
+            background: linear-gradient(135deg, #3d2b1a 0%, #5c3f28 100%);
+        }
+        
+        .moneyheist-gradient {
+            background: linear-gradient(135deg, #8b1e1e 0%, #b32d2d 100%);
+        }
+        
+        .theboys-gradient {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a2634 100%);
+        }
+        
+        .wednesday-gradient {
+            background: linear-gradient(135deg, #2d1b1b 0%, #4a2b2b 100%);
+        }
+        
+        .ozark-gradient {
+            background: linear-gradient(135deg, #1e3c3c 0%, #2a5252 100%);
+        }
+        
+        .mindhunter-gradient {
+            background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- شريط التنقل العلوي -->
+    <nav class="bg-black/30 backdrop-blur-lg fixed w-full z-50 border-b border-yellow-500/20">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- الشعار -->
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <i class="fas fa-crown text-yellow-500 text-2xl"></i>
+                    <a href="home.html" class="text-2xl font-bold glow-text">عودة الممالك</a>
+                </div>
+                
+                <!-- روابط التنقل -->
+                <div class="hidden md:flex items-center space-x-1 space-x-reverse">
+                    <a href="home.html" class="nav-link text-gray-300 hover:text-yellow-500 transition">الرئيسية</a>
+                    <a href="all-series.html" class="nav-link text-yellow-500 transition">جميع المسلسلات</a>
+                </div>
+                
+                <!-- قائمة المستخدم -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <button class="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold transition flex items-center gap-2">
+                        <i class="fas fa-user"></i>
+                        <span>حسابي</span>
+                    </button>
+                    <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg transition border border-red-600/30">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- عنوان الصفحة -->
+    <section class="pt-32 pb-12 px-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl font-black mb-4 glow-text">📺 جميع المسلسلات</h1>
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                اكتشف مجموعتنا الكاملة من المسلسلات العالمية الحصرية، كل المحتوى آمن ونظيف لمشاهدة ممتعة.
+            </p>
+            
+            <!-- شريط البحث -->
+            <div class="max-w-2xl mx-auto mb-8">
+                <div class="search-box rounded-full flex items-center p-1">
+                    <input type="text" id="searchInput" placeholder="ابحث عن مسلسلك المفضل..." 
+                        class="bg-transparent flex-1 px-6 py-3 text-white outline-none">
+                    <button class="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-full font-bold transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- أزرار التصنيف -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8" id="categoryFilters">
+                <button class="category-btn active px-4 py-2 rounded-full font-bold text-sm" data-category="all">الكل</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="action">أكشن</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="drama">دراما</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="fantasy">فانتازيا</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="sci-fi">خيال علمي</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="crime">جريمة</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="horror">رعب</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="history">تاريخي</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="mystery">غموض</button>
+                <button class="category-btn px-4 py-2 rounded-full font-bold text-sm" data-category="romance">رومانسي</button>
+            </div>
+            
+            <!-- عدد المسلسلات -->
+            <div class="text-gray-400">
+                <span id="seriesCount">24</span> مسلسل متاح
+            </div>
+        </div>
+    </section>
+
+    <!-- شبكة جميع المسلسلات -->
+    <section class="pb-20 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" id="allSeriesGrid">
+                
+                <!-- Game of Thrones -->
+                <div class="series-card got-gradient rounded-xl overflow-hidden cursor-pointer" data-category="fantasy drama" data-name="game of thrones" onclick="window.location.href='got.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://media.filfan.com/NewsPics/FilfanNew/large/270367_0.jpg" alt="Game of Thrones" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 9.3
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            8 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">Game of Thrones</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">صراع العائلات النبيلة على العرش الحديدي</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">فانتازيا</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+                        </div>
+                    </div>
+                </div>
+<!-- Spartacus -->
+<div class="series-card bg-gradient-to-br from-red-900 to-red-700 rounded-xl overflow-hidden cursor-pointer" data-category="action history drama" data-name="spartacus" onclick="window.location.href='spartacus.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://m.media-amazon.com/images/S/pv-target-images/2d8cd5431c35086c4d35996a25383e4dffa53df085d5e057051614ed39cc9cba.jpg" alt="Spartacus" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.5
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+         3 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Spartacus</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">قصة الجندي التراقي الذي قاد أعظم ثورة ضد الرومان</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">تاريخي</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+        </div>
+    </div>
+</div>
+
+                
+                <!-- Stranger Things -->
+                <div class="series-card strangerthings-gradient rounded-xl overflow-hidden cursor-pointer" data-category="sci-fi horror" data-name="stranger things" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://static0.cbrimages.com/wordpress/wp-content/uploads/2024/09/stranger-things-every-seasons.jpg" alt="Stranger Things" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.7
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            5 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">Stranger Things</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">أطفال يواجهون قوى خارقة من بُعد آخر</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">خيال علمي</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">رعب</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vikings -->
+                <div class="series-card bg-gradient-to-br from-amber-900 to-red-900 rounded-xl overflow-hidden cursor-pointer" data-category="action history" data-name="vikings" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://vikingsfrancais.com/wp-content/uploads/2024/07/Vikings-Saison-4.jpg" alt="Vikings" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.5
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            6 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">Vikings</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">مغامرات الفايكنج وغزواتهم عبر أوروبا</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">تاريخي</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- House of the Dragon -->
+<div class="series-card bg-gradient-to-br from-red-900 to-red-700 rounded-xl overflow-hidden cursor-pointer" data-category="fantasy drama action" data-name="house of the dragon" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://osn-artwork.anghcdn.co/landscape_tt_SR7936/7936_LTT063421039.jpg" alt="House of the Dragon" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.5
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            2 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">House of the Dragon</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">قصة صعود آل تارجارين والصراع الدموي على العرش الحديدي قبل 200 عام من Game of Thrones</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">فانتازيا</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+        </div>
+    </div>
+</div>
+
+                <!-- Prison Break -->
+<div class="series-card bg-gradient-to-br from-blue-900 to-blue-700 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime action" data-name="prison break" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/Qs00mKCpRvrkl3HZAN5KwEL1kpE/AAAABUaMFyRP15OajINlQ2JNRS6ig26Gy8l9ItNdaodHl1iBHGGAsY5MaK0IyxZX69cADj-fkgczz01pg4Nfj0CJ9Gfpcnf9uhgSAk2J.webp?r=dbe" alt="Prison Break" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.3
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            5 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Prison Break</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">مهندس إنشائي يخطط للدخول إلى السجن لينقذ أخاه المحكوم بالإعدام في خطة هروب محكمة</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+        </div>
+    </div>
+</div>
+
+                <!-- Breaking Bad -->
+<div class="series-card bg-gradient-to-br from-green-900 to-green-700 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime" data-name="breaking bad" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://img.gaming.gentside.com/sto/tags/breaking-bad-6402981cde1dfb15bf589de2_1278d4a2cb82d030787460ba.jpg" alt="Breaking Bad" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 9.5
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            5 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Breaking Bad</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">مدرس كيمياء يتحول إلى أكبر مصنع للميثامفيتامين</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Better Call Saul -->
+<div class="series-card bg-gradient-to-br from-orange-900 to-orange-500 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime" data-name="better call saul" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://www.samma3a.com/tech/ar/wp-content/uploads/sites/3/2019/09/better-call-saul.jpg" alt="Better Call Saul" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.9
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            6 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Better Call Saul</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">قصة المحامي جيمي ماكغيل قبل أن يصبح سول غودمان</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+        </div>
+    </div>
+</div>
+               
+<!-- Hannibal -->
+<div class="series-card bg-gradient-to-br from-purple-900 to-purple-700 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime horror" data-name="hannibal" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://m.media-amazon.com/images/S/pv-target-images/a14395c9162a8f079e1113abd3d82a591ddcc756640ec2b161485d3c43b2345a.jpg" alt="Hannibal" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.5
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            3 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Hannibal</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">الطبيب النفسي هانيبال ليكتر، خبير في الطب النفسي وعلم الإجرام</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">رعب</span>
+        </div>
+    </div>
+</div>
+
+
+                <!-- The Witcher -->
+                <div class="series-card thewitcher-gradient rounded-xl overflow-hidden cursor-pointer" data-category="fantasy action" data-name="the witcher" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://vonguru.fr/wp-content/uploads/2020/01/critique-serie-netflix-the-witcher-saison-1-cineserie-cover-vonguru.jpg" alt="The Witcher" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.2
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            3 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">The Witcher</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">صائد الوحوش جيرالت في عالم مليء بالسحر</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">فانتازيا</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Dark -->
+                <div class="series-card dark-gradient rounded-xl overflow-hidden cursor-pointer" data-category="sci-fi mystery" data-name="dark" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://ntvb.tmsimg.com/assets/p14652182_b_h10_aa.jpg?w=1280&h=720" alt="Dark" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.8
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            3 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">Dark</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">ألغاز زمنية في بلدة ألمانية</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">غموض</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">خيال علمي</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peaky Blinders -->
+                <div class="series-card peakyblinders-gradient rounded-xl overflow-hidden cursor-pointer" data-category="drama crime" data-name="peaky blinders" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://m.media-amazon.com/images/S/pv-target-images/5c3e0d6b9ad0460aa7e63bb1e1d56c4b75722a98f467f5aa8d22650c27a71e1b.jpg" alt="Peaky Blinders" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.8
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            6 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">Peaky Blinders</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">عصابة عائلية في إنجلترا بعد الحرب العالمية</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+                        </div>
+                    </div>
+                </div>
+
+
+<!-- Dexter -->
+<div class="series-card bg-gradient-to-br from-red-800 to-red-600 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime mystery" data-name="dexter" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://www.eklecty-city.fr/wp-content/uploads/2013/01/Dexter-Season-1-Banner-01.jpg" alt="Dexter" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.6
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            8 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Dexter</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">خبير في تحليل الدماء يعمل لصالح الشرطة نهاراً ويصطاد المجرمين ليلاً</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">غموض</span>
+        </div>
+    </div>
+</div>
+
+                
+                <!-- The Last of Us -->
+                <div class="series-card bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden cursor-pointer" data-category="horror drama" data-name="the last of us" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://www.heavenofhorror.com/wp-content/uploads/2023/01/the-last-of-us-hbo-review.jpg" alt="The Last of Us" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.7
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            1 موسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">The Last of Us</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">رحلة في عالم ما بعد نهاية العالم</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">رعب</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- la casa de papel -->
+                <div class="series-card moneyheist-gradient rounded-xl overflow-hidden cursor-pointer" data-category="crime action" data-name="la casa de papel" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://4kwallpapers.com/images/wallpapers/la-casa-de-papel-tv-5120x2880-18748.jpg" alt="la casa de papel" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.3
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            5 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">la casa de papel</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">سرقة دار سك العملة الإسبانية</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Boys -->
+                <div class="series-card theboys-gradient rounded-xl overflow-hidden cursor-pointer" data-category="action sci-fi" data-name="the boys" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://comicbook.com/wp-content/uploads/sites/4/2025/03/The-Boys-Final-Season-Everything-to-Know-Cast-Story-Release-Date.jpg?w=1280" alt="The Boys" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.7
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            3 مواسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">The Boys</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">عالم يتحول فيه الأبطال الخارقون إلى فاسدين</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">أكشن</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">خيال علمي</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wednesday -->
+                <div class="series-card wednesday-gradient rounded-xl overflow-hidden cursor-pointer" data-category="fantasy comedy" data-name="wednesday" onclick="window.location.href='soon.html'">
+                    <div class="relative h-40 overflow-hidden">
+                        <img src="https://www.heavenofhorror.com/wp-content/uploads/2022/11/wednesday-netflix-review.jpg" alt="Wednesday" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            <i class="fas fa-star"></i> 8.1
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+                            1 موسم
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-base mb-1 truncate">Wednesday</h3>
+                        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">مغامرات وينزداي في أكاديمية نيفرمور</p>
+                        <div class="flex gap-1">
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">فانتازيا</span>
+                            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">كوميدي</span>
+                        </div>
+                    </div>
+                </div>
+
+              <!-- You -->
+<div class="series-card bg-gradient-to-br from-slate-800 to-slate-600 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime thriller" data-name="you" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://m.media-amazon.com/images/S/pv-target-images/1fab9e0c13e224505501f6d4f01009e54dc702d9a2edfaaef2cf39574520c4de.jpg" alt="You" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 7.7
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            5 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">You</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">مدير مكتبة مهووس يستخدم وسائل خطيرة لدخول حياة فتاة أحلامه</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">إثارة</span>
+        </div>
+    </div>
+</div>
+
+<!-- Mr. Robot -->
+<div class="series-card bg-gradient-to-br from-gray-900 to-gray-700 rounded-xl overflow-hidden cursor-pointer" data-category="drama crime thriller" data-name="mr robot" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://m.media-amazon.com/images/S/pv-target-images/c88d3e171a6243dac07c2ec987b4d39248c7485167e16d70856d155547e21f4e.jpg" alt="Mr. Robot" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 8.5
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            4 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">Mr. Robot</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">مبرمج شاب يعاني من اضطراب نفسي ينضم إلى مجموعة هاكرز لتدمير نظام الشركات الكبرى</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">دراما</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">جريمة</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">إثارة</span>
+        </div>
+    </div>
+</div>
+
+
+<!-- From -->
+<div class="series-card bg-gradient-to-br from-amber-900 to-amber-700 rounded-xl overflow-hidden cursor-pointer" data-category="horror mystery thriller" data-name="from" onclick="window.location.href='soon.html'">
+    <div class="relative h-40 overflow-hidden">
+        <img src="https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2023/06/27/2238025283801/PPPAR_FROM_SEASON_2_OFCLTRL_FRA_2260056_1920x1080.jpg" alt="From" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+            <i class="fas fa-star"></i> 7.8
+        </div>
+        <div class="absolute bottom-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs">
+            3 مواسم
+        </div>
+    </div>
+    <div class="p-3">
+        <h3 class="font-bold text-base mb-1 truncate">From</h3>
+        <p class="text-gray-400 text-xs mb-2 h-10 overflow-hidden">بلدة أمريكية مسكونة تحاصر سكانها وتجبرهم على البقاء فيها مع كائنات ليلية مرعبة</p>
+        <div class="flex gap-1">
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">رعب</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">غموض</span>
+            <span class="bg-gray-700 px-2 py-0.5 rounded text-xs">إثارة</span>
+        </div>
+    </div>
+</div>
+
+                
+            </div>
+            
+            <!-- رسالة عدم وجود نتائج بحث -->
+            <div id="noResults" class="text-center py-12 hidden">
+                <i class="fas fa-search text-6xl text-gray-600 mb-4"></i>
+                <p class="text-gray-400 text-xl">لا توجد مسلسلات تطابق بحثك</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- زر العودة للأعلى -->
+    <button onclick="scrollToTop()" id="scrollTopBtn" class="fixed bottom-8 left-8 bg-yellow-500 text-black w-12 h-12 rounded-full shadow-lg hover:bg-yellow-400 transition opacity-0 invisible">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- تذييل الصفحة -->
+    <footer class="bg-black/50 border-t border-yellow-500/20 py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-crown text-yellow-500 text-2xl"></i>
+                        <span class="text-2xl font-bold">عودة الممالك</span>
+                    </div>
+                    <p class="text-gray-400">منصتك الآمنة لمشاهدة المسلسلات العالمية بدون لقطات غير لائقة، بجودة عالية وتجربة مشاهدة ممتعة.</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">روابط سريعة</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="home.html" class="hover:text-yellow-500 transition">الرئيسية</a></li>
+                        <li><a href="all-series.html" class="hover:text-yellow-500 transition">جميع المسلسلات</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">تابعنا</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-yellow-500 hover:text-black transition">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">منصتنا</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        منصة عربية آمنة لمشاهدة المسلسلات العالمية بدون لقطات غير لائقة، نوفر لكم أفضل المحتوى الترفيهي النظيف.
+                    </p>
+                    <div class="flex items-center gap-2 mt-3">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span class="text-sm text-gray-300">محتوى آمن للعائلة</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>جميع الحقوق محفوظة &copy; 2025 عودة الممالك</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem("user_logged_in");
+            if (isLoggedIn !== "true") {
+                window.location.href = "index.html";
+            }
+            
+            // تحديث عدد المسلسلات
+            updateSeriesCount();
+            
+            // تفعيل البحث والتصفية
+            setupSearchAndFilters();
+            
+            // زر العودة للأعلى
+            setupScrollTopButton();
+        });
+
+        // تسجيل الخروج
+        function logout() {
+            localStorage.removeItem("user_logged_in");
+            localStorage.removeItem("google_access_token");
+            window.location.href = "index.html";
+        }
+
+        // تحديث عدد المسلسلات
+        function updateSeriesCount() {
+            const cards = document.querySelectorAll('.series-card');
+            document.getElementById('seriesCount').textContent = cards.length;
+        }
+
+        // تفعيل البحث والتصفية
+        function setupSearchAndFilters() {
+            const searchInput = document.getElementById('searchInput');
+            const filterBtns = document.querySelectorAll('.category-btn');
+            const seriesCards = document.querySelectorAll('.series-card');
+            const noResults = document.getElementById('noResults');
+            
+            function filterSeries() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeFilter = document.querySelector('.category-btn.active').dataset.category;
+                
+                let visibleCount = 0;
+                
+                seriesCards.forEach(card => {
+                    const category = card.dataset.category;
+                    const name = card.dataset.name;
+                    
+                    const matchesFilter = activeFilter === 'all' || category.includes(activeFilter);
+                    const matchesSearch = searchTerm === '' || name.includes(searchTerm);
+                    
+                    if (matchesFilter && matchesSearch) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // إظهار/إخفاء رسالة عدم وجود نتائج
+                if (visibleCount === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            }
+            
+            // أحداث البحث
+            searchInput.addEventListener('input', filterSeries);
+            
+            // أحداث أزرار التصنيف
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active', 'bg-yellow-500', 'text-black'));
+                    btn.classList.add('active', 'bg-yellow-500', 'text-black');
+                    filterSeries();
+                });
+            });
+        }
+
+        // زر العودة للأعلى
+        function setupScrollTopButton() {
+            const btn = document.getElementById('scrollTopBtn');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    btn.classList.remove('opacity-0', 'invisible');
+                    btn.classList.add('opacity-100', 'visible');
+                } else {
+                    btn.classList.add('opacity-0', 'invisible');
+                    btn.classList.remove('opacity-100', 'visible');
+                }
+            });
+        }
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

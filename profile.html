@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - عودة الممالك</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { font-family: 'Tajawal', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0f0c1f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+        }
+        .profile-card {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 1.5rem;
+        }
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 1rem;
+            transition: all 0.3s;
+            padding: 1.5rem;
+        }
+        .stat-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-5px);
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #9ca3af;
+        }
+        .info-value {
+            color: #ffd700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="text-white p-4">
+    <div class="container max-w-4xl mx-auto py-8">
+        <!-- رأس الصفحة -->
+        <div class="flex justify-between items-center mb-8">
+            <a href="home.html" class="text-yellow-500 hover:text-yellow-400 text-lg transition">
+                <i class="fas fa-arrow-right ml-2"></i>
+                العودة للرئيسية
+            </a>
+            <h1 class="text-3xl font-bold glow-text">الملف الشخصي</h1>
+            <div></div>
+        </div>
+
+        <!-- بطاقة الملف الشخصي -->
+        <div class="profile-card p-8 mb-8">
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <!-- الصورة الشخصية -->
+                <div class="relative">
+                    <img id="profileAvatar" src="" alt="User" class="user-avatar">
+                    <div class="absolute bottom-2 right-2 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+                </div>
+                
+                <!-- معلومات المستخدم -->
+                <div class="flex-1 text-center md:text-right">
+                    <h2 id="profileName" class="text-3xl font-bold mb-2">جاري التحميل...</h2>
+                    <p id="profileEmail" class="text-gray-400 mb-4">example@gmail.com</p>
+                    <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                        <span id="memberSince" class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-sm border border-blue-500/30">
+                            <i class="fas fa-calendar-alt ml-1"></i>
+                            عضو منذ: ...
+                        </span>
+                        <span class="bg-green-600/20 text-green-400 px-3 py-1 rounded-full text-sm border border-green-500/30">
+                            <i class="fas fa-check-circle ml-1"></i>
+                            حساب نشط
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- إحصائيات سريعة -->
+                <div class="flex gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-500" id="statsEpisodes">0</div>
+                        <div class="text-sm text-gray-400">حلقة</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-500" id="statsSeries">0</div>
+                        <div class="text-sm text-gray-400">مسلسل</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-500" id="statsHours">0</div>
+                        <div class="text-sm text-gray-400">ساعة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- إحصائيات المشاهدة -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="stat-card">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-history text-yellow-500"></i>
+                    آخر المشاهدات
+                </h3>
+                <div id="recentStats" class="space-y-2">
+                    <div class="text-center text-gray-400 py-4">لا توجد مشاهدات حديثة</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-yellow-500"></i>
+                    إحصائيات المشاهدة
+                </h3>
+                <div class="space-y-3">
+                    <div class="info-row">
+                        <span class="info-label">إجمالي وقت المشاهدة</span>
+                        <span class="info-value" id="totalWatchTime">0 ساعة</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">آخر مشاهدة</span>
+                        <span class="info-value" id="lastWatched">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">المسلسل المفضل</span>
+                        <span class="info-value" id="favoriteSeries">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات الحساب -->
+        <div class="profile-card p-6">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-info-circle text-yellow-500"></i>
+                معلومات الحساب
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/30 p-4 rounded-lg">
+                    <div class="text-gray-400 text-sm mb-1">البريد الإلكتروني</div>
+                    <div class="text-white font-bold" id="infoEmail">example@gmail.com</div>
+                </div>
+                <div class="bg-black/30 p-4 rounded-lg">
+                    <div class="text-gray-400 text-sm mb-1">تاريخ التسجيل</div>
+                    <div class="text-white font-bold" id="infoJoinDate">2025-01-01</div>
+                </div>
+                <div class="bg-black/30 p-4 rounded-lg">
+                    <div class="text-gray-400 text-sm mb-1">آخر دخول</div>
+                    <div class="text-white font-bold" id="infoLastLogin">اليوم</div>
+                </div>
+                <div class="bg-black/30 p-4 rounded-lg">
+                    <div class="text-gray-400 text-sm mb-1">طريقة التسجيل</div>
+                    <div class="text-white font-bold" id="infoLoginMethod">Google</div>
+                </div>
+            </div>
+            
+            <!-- زر تسجيل الخروج -->
+            <div class="mt-6 text-center">
+                <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-8 py-3 rounded-lg transition border border-red-600/30 font-bold">
+                    <i class="fas fa-sign-out-alt ml-2"></i>
+                    تسجيل الخروج
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من تسجيل الدخول
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem("user_logged_in");
+            if (isLoggedIn !== "true") {
+                window.location.href = "index.html";
+            }
+            
+            loadUserData();
+        });
+
+        // تحميل بيانات المستخدم
+        function loadUserData() {
+            // بيانات المستخدم من Google
+            const userEmail = localStorage.getItem("user_email") || 'غير متوفر';
+            const userName = localStorage.getItem("user_name") || 'مستخدم';
+            
+            // معرف المستخدم
+            const currentUserId = localStorage.getItem("currentUserId") || 
+                                 (userEmail ? userEmail.split('@')[0] : 'guest');
+            
+            // تحديث العرض
+            document.getElementById('profileName').textContent = userName;
+            document.getElementById('profileEmail').textContent = userEmail;
+            document.getElementById('infoEmail').textContent = userEmail;
+            
+            // الصورة الشخصية
+            const userAvatar = localStorage.getItem("user_avatar") || 
+                              `https://ui-avatars.com/api/?name=${userName}&background=ffd700&color=000&size=200`;
+            document.getElementById('profileAvatar').src = userAvatar;
+            
+            // تاريخ التسجيل (من localStorage أو افتراضي)
+            let joinDate = localStorage.getItem(`joinDate_${currentUserId}`);
+            if (!joinDate) {
+                joinDate = new Date().toISOString().split('T')[0];
+                localStorage.setItem(`joinDate_${currentUserId}`, joinDate);
+            }
+            document.getElementById('memberSince').innerHTML = `<i class="fas fa-calendar-alt ml-1"></i>عضو منذ: ${formatDate(joinDate)}`;
+            document.getElementById('infoJoinDate').textContent = formatDate(joinDate);
+            
+            // آخر دخول
+            const lastLogin = new Date().toLocaleDateString('ar');
+            document.getElementById('infoLastLogin').textContent = lastLogin;
+            
+            // طريقة التسجيل
+            const loginMethod = localStorage.getItem("google_access_token") ? 'Google' : 'بريد إلكتروني';
+            document.getElementById('infoLoginMethod').textContent = loginMethod;
+            
+            // تحميل الإحصائيات
+            loadStats(currentUserId, userEmail);
+        }
+
+        // تحميل الإحصائيات
+        function loadStats(userId, userEmail) {
+            const watched = JSON.parse(localStorage.getItem(`watchedEpisodes_${userId}`) || '[]');
+            
+            // عدد الحلقات
+            document.getElementById('statsEpisodes').textContent = watched.length;
+            
+            // عدد المسلسلات الفريدة
+            const uniqueSeries = new Set(watched.map(ep => ep.series).filter(Boolean)).size;
+            document.getElementById('statsSeries').textContent = uniqueSeries;
+            
+            // حساب ساعات المشاهدة (تقديري: كل حلقة 45 دقيقة)
+            const totalMinutes = watched.length * 45;
+            const hours = Math.floor(totalMinutes / 60);
+            document.getElementById('statsHours').textContent = hours;
+            document.getElementById('totalWatchTime').textContent = `${hours} ساعة`;
+            
+            // آخر المشاهدات
+            const recentDiv = document.getElementById('recentStats');
+            recentDiv.innerHTML = '';
+            
+            if (watched.length === 0) {
+                recentDiv.innerHTML = '<div class="text-center text-gray-400 py-4">لا توجد مشاهدات حديثة</div>';
+            } else {
+                watched.slice(0, 5).forEach(ep => {
+                    recentDiv.innerHTML += `
+                        <div class="flex justify-between items-center p-2 bg-black/30 rounded-lg">
+                            <div>
+                                <div class="font-bold">${ep.title}</div>
+                                <div class="text-xs text-gray-400">${ep.series || 'مسلسل'}</div>
+                            </div>
+                            <div class="text-sm text-yellow-500">${ep.watchedAt ? new Date(ep.watchedAt).toLocaleDateString('ar') : 'اليوم'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // آخر مشاهدة
+            if (watched.length > 0) {
+                document.getElementById('lastWatched').textContent = new Date(watched[0].watchedAt).toLocaleDateString('ar');
+            }
+            
+            // المسلسل المفضل (الأكثر مشاهدة)
+            if (watched.length > 0) {
+                const seriesCount = {};
+                watched.forEach(ep => {
+                    seriesCount[ep.series] = (seriesCount[ep.series] || 0) + 1;
+                });
+                
+                let favorite = '';
+                let maxCount = 0;
+                for (const [series, count] of Object.entries(seriesCount)) {
+                    if (count > maxCount && series) {
+                        maxCount = count;
+                        favorite = series;
+                    }
+                }
+                document.getElementById('favoriteSeries').textContent = favorite || '-';
+            }
+        }
+
+        // تنسيق التاريخ
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ar', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.removeItem("user_logged_in");
+                localStorage.removeItem("google_access_token");
+                localStorage.removeItem("user_email");
+                localStorage.removeItem("user_name");
+                localStorage.removeItem("user_avatar");
+                window.location.href = "index.html";
+            }
+        }
+    </script>
+</body>
+</html>
